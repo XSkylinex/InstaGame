@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "867672596293",
+    "firebase_url": "https://instagame-cceac.firebaseio.com",
+    "project_id": "instagame-cceac",
+    "storage_bucket": "instagame-cceac.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867672596293:android:3506e331edf1c12363a82c",
+        "android_client_info": {
+          "package_name": "com.example.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "867672596293-rjk14808050r44ge79h9ttgktt2stqf0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoouPNLP4uC0m8jYWb9QyPuhTh1ZVWw14"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "867672596293-rjk14808050r44ge79h9ttgktt2stqf0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
