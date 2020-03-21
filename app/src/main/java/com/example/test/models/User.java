@@ -10,6 +10,8 @@ public class User implements Serializable {
     private String _userName;
     private boolean _isAdmin;
 
+    private User(){}
+
     public User(String _id, String _email, String _userName) {
         this._id = _id;
         this._email = _email;

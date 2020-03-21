@@ -1,11 +1,14 @@
 package com.example.test.contollers.database;
 
+import android.os.Debug;
+
 import androidx.annotation.NonNull;
 
 import com.example.test.contollers.Auth;
 import com.example.test.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -43,22 +46,14 @@ public class UserApi {
 
     public void getUser(String userId, Consumer<User> onComplete, Consumer<Exception> onFailure){
         usersCollection.document(userId).get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    DocumentSnapshot document = task.getResult();
-                    if (Objects.requireNonNull(document).exists()) {
-                        User user = document.toObject(User.class);
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        User user = documentSnapshot.toObject(User.class);
                         onComplete.accept(user);
-                    } else {
-                        onFailure.accept(new NullPointerException("user not Exist"));
                     }
-                }else{
-                    onFailure.accept(task.getException());
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
+                })
+                .addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 onFailure.accept(e);

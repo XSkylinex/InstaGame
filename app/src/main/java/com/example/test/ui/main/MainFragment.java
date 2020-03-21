@@ -49,37 +49,37 @@ public class MainFragment extends Fragment {
         // TODO: Use the ViewModel
         mViewModel.getUsers().observe(getViewLifecycleOwner(), users -> {
             // update UI
-            //tvMessage.setText(users.toString());
+            tvMessage.setText(users.toString());
         });
-        String email = "alex@gmail.com";
-        Auth.SignUp(email, "Aa123456",
-                new Consumer<String>() {
-            @Override
-            public void accept(String userId) {
-                System.out.println(userId);
-                tvMessage.setText(userId);
-                User user = new User(userId,email, "alex");
-                Database.User.addUser(user, new Consumer<Void>() {
-                    @Override
-                    public void accept(Void aVoid) {
-
-                    }
-                }, new Consumer<Exception>() {
-                    @Override
-                    public void accept(Exception e) {
-
-                    }
-                });
-
-
-            }
-        }, new Consumer<Exception>() {
-            @Override
-            public void accept(Exception e) {
-                e.printStackTrace();
-                tvMessage.setText(e.getMessage());
-            }
-        });
+//        String email = "alex@gmail.com";
+//        Auth.SignUp(email, "Aa123456",
+//                new Consumer<String>() {
+//            @Override
+//            public void accept(String userId) {
+//                System.out.println(userId);
+//                tvMessage.setText(userId);
+//                User user = new User(userId,email, "alex");
+//                Database.User.addUser(user, new Consumer<Void>() {
+//                    @Override
+//                    public void accept(Void aVoid) {
+//
+//                    }
+//                }, new Consumer<Exception>() {
+//                    @Override
+//                    public void accept(Exception e) {
+//
+//                    }
+//                });
+//
+//
+//            }
+//        }, new Consumer<Exception>() {
+//            @Override
+//            public void accept(Exception e) {
+//                e.printStackTrace();
+//                tvMessage.setText(e.getMessage());
+//            }
+//        });
     }
 
 }
