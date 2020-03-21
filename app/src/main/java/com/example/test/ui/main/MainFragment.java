@@ -12,11 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.test.R;
-import com.example.test.contollers.Auth;
-import com.example.test.contollers.database.Database;
-import com.example.test.models.User;
-
-import java.util.function.Consumer;
 
 public class MainFragment extends Fragment {
 
@@ -37,7 +32,8 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
-        tvMessage = (TextView) view.findViewById(R.id.message1);
+
+//        tvMessage = (TextView) view.findViewById(R.id.message1);
 
         super.onViewCreated(view, savedInstanceState);
     }
@@ -49,7 +45,7 @@ public class MainFragment extends Fragment {
         // TODO: Use the ViewModel
         mViewModel.getUsers().observe(getViewLifecycleOwner(), users -> {
             // update UI
-            tvMessage.setText(users.toString());
+//            tvMessage.setText(users.toString());
         });
 //        String email = "alex@gmail.com";
 //        Auth.SignUp(email, "Aa123456",
