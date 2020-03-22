@@ -1,21 +1,23 @@
 package com.example.test.contollers.database;
 
-import android.os.Debug;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.test.contollers.Auth;
+import com.example.test.models.listener.Listener;
 import com.example.test.models.User;
+import com.example.test.models.listener.ListenerFirebaseAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class UserApi {
@@ -61,6 +63,27 @@ public class UserApi {
             }
         });
     }
+
+    public Listener listenUser(String userId, Consumer<User> onComplete, Consumer<Exception> onFailure){
+        ListenerRegistration listenerRegistration = usersCollection.document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    onFailure.accept(e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    User user = snapshot.toObject(User.class);
+                    onComplete.accept(user);
+                } else {
+                    onComplete.accept(null);
+                }
+            }
+        });
+        return new ListenerFirebaseAdapter(listenerRegistration);
+    }
+
 
     public void deleteUser(String userId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         usersCollection.document(userId).delete()
