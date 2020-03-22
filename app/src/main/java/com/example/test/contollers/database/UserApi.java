@@ -12,12 +12,17 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class UserApi {
@@ -84,6 +89,74 @@ public class UserApi {
         return new ListenerFirebaseAdapter(listenerRegistration);
     }
 
+    public void getUsers(Consumer<List<User>> onComplete, Consumer<Exception> onFailure){
+        usersCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                List<User> users = new ArrayList<>();
+                for (DocumentSnapshot document : documents) {
+                    users.add(document.toObject(User.class));
+                }
+                onComplete.accept(users);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onFailure.accept(e);
+            }
+        });
+
+    }
+
+    public Listener listenUsers(Consumer<List<User>> onComplete, Consumer<Exception> onFailure){
+        ListenerRegistration listenerRegistration = usersCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    onFailure.accept(e);
+                    return;
+                }
+                assert queryDocumentSnapshots != null;
+                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                List<User> users = new ArrayList<>();
+                for (DocumentSnapshot doc : documents) {
+                        users.add(doc.toObject(User.class));
+                }
+                onComplete.accept(users);
+            }
+        });
+        return new ListenerFirebaseAdapter(listenerRegistration);
+    }
+
+    public Listener listenUsersChanges(Consumer<User> onAdded, Consumer<User> onModified, Consumer<User> onRemoved, Consumer<Exception> onFailure){
+        ListenerRegistration listenerRegistration = usersCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    onFailure.accept(e);
+                    return;
+                }
+                assert queryDocumentSnapshots != null;
+                List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
+                for (DocumentChange documentChange : documentChanges) {
+                    User user = documentChange.getDocument().toObject(User.class);
+                    switch (documentChange.getType()) {
+                        case ADDED:
+                            onAdded.accept(user);
+                            break;
+                        case MODIFIED:
+                            onModified.accept(user);
+                            break;
+                        case REMOVED:
+                            onRemoved.accept(user);
+                            break;
+                    }
+                }
+            }
+        });
+        return new ListenerFirebaseAdapter(listenerRegistration);
+    }
 
     public void deleteUser(String userId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         usersCollection.document(userId).delete()
