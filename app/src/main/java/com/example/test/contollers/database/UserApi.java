@@ -1,6 +1,7 @@
 package com.example.test.contollers.database;
 
 import android.os.Debug;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -59,6 +60,37 @@ public class UserApi {
                 onFailure.accept(e);
             }
         });
+    }
+
+    public void deleteUser(String userId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
+        usersCollection.document(userId).delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        onComplete.accept(null);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onFailure.accept(e);
+            }
+        });
+    }
+
+    public void updateUser(User user, Consumer<Void> onComplete, Consumer<Exception> onFailure){
+        usersCollection.document(user.get_id()).set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                onComplete.accept(null);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onFailure.accept(e);
+            }
+        });
+
     }
 
     public void getCurrentUser(Consumer<User> onComplete, Consumer<Exception> onFailure){
