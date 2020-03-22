@@ -58,11 +58,15 @@ public class Auth {
 
     }
 
-    public void signOut(){
+    public static void signOut(){
         auth.signOut();
     }
 
     public static String getUserId(){
         return auth.getUid();
+    }
+
+    public static boolean isSignIn(){
+        return getUserId() != null;
     }
 }
