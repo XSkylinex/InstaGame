@@ -36,6 +36,32 @@ public class Auth {
 
     }
 
+    public static void SignIn(String email, String password, Consumer<String> onComplete, Consumer<Exception> onFailure){
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()){
+                            String userId = getUserId();
+                            onComplete.accept(userId);
+                        }else{
+                            onFailure.accept(task.getException());
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        onFailure.accept(e);
+                    }
+                });
+
+    }
+
+    public void signOut(){
+        auth.signOut();
+    }
+
     public static String getUserId(){
         return auth.getUid();
     }

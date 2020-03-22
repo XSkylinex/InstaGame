@@ -80,38 +80,18 @@ tools:context=".ui.register.RegisterFragment">
         android:textColor="#fff"
         android:textColorHint="#eee"
         android:textSize="17sp" />
-    <Button
-        android:paddingRight="20dp"
-        android:paddingLeft="20dp"
-        android:background="@drawable/round_corner_buttom"
-        android:text="sign in"
-        android:textColor="#777"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp" />
-
-</LinearLayout>
-
-
-<LinearLayout
-    android:layout_marginBottom="30dp"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:layout_alignParentBottom="true"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
 
     <Button
-        android:id="@+id/btn_login_to_register"
+        android:id="@+id/btn_signup"
         android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:layout_marginBottom="10dp"
+        android:layout_height="35dp"
         android:background="@drawable/round_corner_buttom"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
-        android:text="Signup"
+        android:text="sign up"
         android:textColor="#777" />
 
-
 </LinearLayout>
+
 
 </RelativeLayout>
