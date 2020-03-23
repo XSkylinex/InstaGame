@@ -18,7 +18,10 @@ public class Post implements Serializable {
     private Date _date;
 
 
-    public Post(@NonNull final String _id,@NonNull final String _imageUrl,@NonNull final String _userId,@NonNull final  String _content,@NonNull final  Location _location,@NonNull final  Date _date) {
+    private Post() {
+    }
+
+    public Post(@NonNull final String _id, @NonNull final String _imageUrl, @NonNull final String _userId, @NonNull final  String _content, @NonNull final  Location _location, @NonNull final  Date _date) {
         this._id = _id;
         this._imageUrl = _imageUrl;
         this._userId = _userId;

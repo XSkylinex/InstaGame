@@ -3,7 +3,7 @@ package com.example.test.contollers.database;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.test.models.Post;
+import com.example.test.models.Comment;
 import com.example.test.models.listener.Listener;
 import com.example.test.models.listener.ListenerFirebaseAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,15 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class PostAPI {
+public class CommentAPI {
 
-    PostAPI(){}
+    CommentAPI(){}
 
-    private static CollectionReference postsCollection = FirebaseFirestore.getInstance()
-            .collection("posts");
+    private static CollectionReference commentsCollection = FirebaseFirestore.getInstance()
+            .collection("comments");
 
-    public void addPost(Post post, Consumer<Void> onComplete, Consumer<Exception> onFailure){
-        postsCollection.document(post.get_id()).set(post)
+    public void addComment(Comment comment, Consumer<Void> onComplete, Consumer<Exception> onFailure){
+        commentsCollection.document(comment.get_id()).set(comment)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -49,13 +49,13 @@ public class PostAPI {
         });
     }
 
-    public void getPost(String postId, Consumer<Post> onComplete, Consumer<Exception> onFailure){
-        postsCollection.document(postId).get()
+    public void getComment(String commentId, Consumer<Comment> onComplete, Consumer<Exception> onFailure){
+        commentsCollection.document(commentId).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Post post = documentSnapshot.toObject(Post.class);
-                        onComplete.accept(post);
+                        Comment comment = documentSnapshot.toObject(Comment.class);
+                        onComplete.accept(comment);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -67,8 +67,8 @@ public class PostAPI {
     }
 
 
-    public Listener listenPost(String postId, Consumer<Post> onComplete, Consumer<Exception> onFailure){
-        ListenerRegistration listenerRegistration = postsCollection.document(postId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+    public Listener listenComment(String commentId, Consumer<Comment> onComplete, Consumer<Exception> onFailure){
+        ListenerRegistration listenerRegistration = commentsCollection.document(commentId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -77,8 +77,8 @@ public class PostAPI {
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    Post post = snapshot.toObject(Post.class);
-                    onComplete.accept(post);
+                    Comment comment = snapshot.toObject(Comment.class);
+                    onComplete.accept(comment);
                 } else {
                     onComplete.accept(null);
                 }
@@ -87,8 +87,8 @@ public class PostAPI {
         return new ListenerFirebaseAdapter(listenerRegistration);
     }
 
-    public Listener listenPosts(Consumer<List<Post>> onComplete, Consumer<Exception> onFailure){
-        ListenerRegistration listenerRegistration = postsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+    public Listener listenComments(Consumer<List<Comment>> onComplete, Consumer<Exception> onFailure){
+        ListenerRegistration listenerRegistration = commentsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -97,18 +97,18 @@ public class PostAPI {
                 }
                 assert queryDocumentSnapshots != null;
                 List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
-                List<Post> posts = new ArrayList<>();
+                List<Comment> comments = new ArrayList<>();
                 for (DocumentSnapshot doc : documents) {
-                    posts.add(doc.toObject(Post.class));
+                    comments.add(doc.toObject(Comment.class));
                 }
-                onComplete.accept(posts);
+                onComplete.accept(comments);
             }
         });
         return new ListenerFirebaseAdapter(listenerRegistration);
     }
 
-    public Listener listenPostsChanges(Consumer<Post> onAdded, Consumer<Post> onModified, Consumer<Post> onRemoved, Consumer<Exception> onFailure){
-        ListenerRegistration listenerRegistration = postsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+    public Listener listenCommentsChanges(Consumer<Comment> onAdded, Consumer<Comment> onModified, Consumer<Comment> onRemoved, Consumer<Exception> onFailure){
+        ListenerRegistration listenerRegistration = commentsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -118,16 +118,16 @@ public class PostAPI {
                 assert queryDocumentSnapshots != null;
                 List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
                 for (DocumentChange documentChange : documentChanges) {
-                    Post post = documentChange.getDocument().toObject(Post.class);
+                    Comment comment = documentChange.getDocument().toObject(Comment.class);
                     switch (documentChange.getType()) {
                         case ADDED:
-                            onAdded.accept(post);
+                            onAdded.accept(comment);
                             break;
                         case MODIFIED:
-                            onModified.accept(post);
+                            onModified.accept(comment);
                             break;
                         case REMOVED:
-                            onRemoved.accept(post);
+                            onRemoved.accept(comment);
                             break;
                     }
                 }
@@ -138,16 +138,16 @@ public class PostAPI {
 
 
 
-    public void getPosts(Consumer<List<Post>> onComplete, Consumer<Exception> onFailure) {
-        postsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+    public void getComments(Consumer<List<Comment>> onComplete, Consumer<Exception> onFailure) {
+        commentsCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
-                List<Post> posts = new ArrayList<>();
+                List<Comment> comments = new ArrayList<>();
                 for (DocumentSnapshot document : documents) {
-                    posts.add(document.toObject(Post.class));
+                    comments.add(document.toObject(Comment.class));
                 }
-                onComplete.accept(posts);
+                onComplete.accept(comments);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -157,8 +157,8 @@ public class PostAPI {
         });
     }
 
-    public void deletePost(String postId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
-        postsCollection.document(postId).delete()
+    public void deleteComment(String commentId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
+        commentsCollection.document(commentId).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -172,8 +172,8 @@ public class PostAPI {
         });
     }
 
-    public void updatePost(Post post, Consumer<Void> onComplete, Consumer<Exception> onFailure){
-        postsCollection.document(post.get_id()).set(post)
+    public void updateComment(Comment comment, Consumer<Void> onComplete, Consumer<Exception> onFailure){
+        commentsCollection.document(comment.get_id()).set(comment)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -188,71 +188,71 @@ public class PostAPI {
 
     }
 
-    public Listener listenPostsFromUser(String userId, Consumer<List<Post>> onComplete, Consumer<Exception> onFailure){
+    public Listener listenCommentsFromPost(String postId, Consumer<List<Comment>> onComplete, Consumer<Exception> onFailure){
         ListenerRegistration listenerRegistration =
-                postsCollection.whereEqualTo("_userId",userId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    onFailure.accept(e);
-                    return;
-                }
-                assert queryDocumentSnapshots != null;
-                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
-                List<Post> posts = new ArrayList<>();
-                for (DocumentSnapshot doc : documents) {
-                    posts.add(doc.toObject(Post.class));
-                }
-                onComplete.accept(posts);
-            }
-        });
+                commentsCollection.whereEqualTo("_postId",postId)
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                if (e != null) {
+                                    onFailure.accept(e);
+                                    return;
+                                }
+                                assert queryDocumentSnapshots != null;
+                                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                                List<Comment> comments = new ArrayList<>();
+                                for (DocumentSnapshot doc : documents) {
+                                    comments.add(doc.toObject(Comment.class));
+                                }
+                                onComplete.accept(comments);
+                            }
+                        });
         return new ListenerFirebaseAdapter(listenerRegistration);
     }
 
-    public Listener listenPostsChangesFromUser(String userId,Consumer<Post> onAdded, Consumer<Post> onModified, Consumer<Post> onRemoved, Consumer<Exception> onFailure){
+    public Listener listenCommentsChangesFromPost(String postId,Consumer<Comment> onAdded, Consumer<Comment> onModified, Consumer<Comment> onRemoved, Consumer<Exception> onFailure){
         ListenerRegistration listenerRegistration =
-                postsCollection.whereEqualTo("_userId",userId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    onFailure.accept(e);
-                    return;
-                }
-                assert queryDocumentSnapshots != null;
-                List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
-                for (DocumentChange documentChange : documentChanges) {
-                    Post post = documentChange.getDocument().toObject(Post.class);
-                    switch (documentChange.getType()) {
-                        case ADDED:
-                            onAdded.accept(post);
-                            break;
-                        case MODIFIED:
-                            onModified.accept(post);
-                            break;
-                        case REMOVED:
-                            onRemoved.accept(post);
-                            break;
-                    }
-                }
-            }
-        });
+                commentsCollection.whereEqualTo("_postId",postId)
+                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                                if (e != null) {
+                                    onFailure.accept(e);
+                                    return;
+                                }
+                                assert queryDocumentSnapshots != null;
+                                List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
+                                for (DocumentChange documentChange : documentChanges) {
+                                    Comment comment = documentChange.getDocument().toObject(Comment.class);
+                                    switch (documentChange.getType()) {
+                                        case ADDED:
+                                            onAdded.accept(comment);
+                                            break;
+                                        case MODIFIED:
+                                            onModified.accept(comment);
+                                            break;
+                                        case REMOVED:
+                                            onRemoved.accept(comment);
+                                            break;
+                                    }
+                                }
+                            }
+                        });
         return new ListenerFirebaseAdapter(listenerRegistration);
     }
 
 
 
-    public void getPostsFromUser(String userId,Consumer<List<Post>> onComplete, Consumer<Exception> onFailure) {
-        postsCollection.whereEqualTo("_userId",userId).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+    public void getCommentsFromPost(String postId,Consumer<List<Comment>> onComplete, Consumer<Exception> onFailure) {
+        commentsCollection.whereEqualTo("_postId",postId).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
-                List<Post> posts = new ArrayList<>();
+                List<Comment> comments = new ArrayList<>();
                 for (DocumentSnapshot document : documents) {
-                    posts.add(document.toObject(Post.class));
+                    comments.add(document.toObject(Comment.class));
                 }
-                onComplete.accept(posts);
+                onComplete.accept(comments);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -261,5 +261,7 @@ public class PostAPI {
             }
         });
     }
+
+
 
 }
