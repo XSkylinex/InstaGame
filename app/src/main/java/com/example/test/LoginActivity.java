@@ -1,7 +1,9 @@
 package com.example.test;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.fragment.NavHostFragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -22,12 +24,13 @@ public class LoginActivity extends AppCompatActivity {
 
             return;
         }
+        getSupportActionBar().hide();
 
         setContentView(R.layout.login_activity);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.login_container, LoginFragment.newInstance())
-                    .commitNow();
-        }
+//        if (savedInstanceState == null) {
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.login_container, LoginFragment.newInstance())
+//                    .commitNow();
+//        }
     }
 }

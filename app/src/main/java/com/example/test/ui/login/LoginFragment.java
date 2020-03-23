@@ -10,6 +10,10 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.Navigator;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +29,7 @@ import com.example.test.contollers.database.Database;
 import com.example.test.models.User;
 import com.example.test.ui.register.RegisterFragment;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class LoginFragment extends Fragment {
@@ -59,14 +64,19 @@ public class LoginFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 //        mViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
 
+//        final Fragment fragment= this;
+
         btnToRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.login_container, RegisterFragment.newInstance());
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+
+                Navigation.findNavController(getView()).navigate(R.id.action_loginFragment_to_registerFragment);
+
+//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                fragmentTransaction.replace(R.id.login_container, RegisterFragment.newInstance());
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
             }
         });
 
@@ -83,6 +93,7 @@ public class LoginFragment extends Fragment {
                             @Override
                             public void accept(User user) {
                                 Toast.makeText(getContext(), "Welcome back "+user.get_userName()+"!", Toast.LENGTH_SHORT).show();
+
                                 Intent intent = new Intent(getActivity(), MainActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
