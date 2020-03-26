@@ -21,6 +21,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -190,6 +191,37 @@ public class UserApi {
 
     public void getCurrentUser(Consumer<User> onComplete, Consumer<Exception> onFailure){
         getUser(Auth.getUserId(),onComplete,onFailure);
+    }
+
+
+    public void attachPostToUser(String userId, String postId,Consumer<Void> onComplete, Consumer<Exception> onFailure){
+        final HashMap<String, Object> map = new HashMap<>();
+        map.put(postId,true);
+        usersCollection.document(userId).collection("posts").document(postId).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                onComplete.accept(aVoid);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onFailure.accept(e);
+            }
+        });
+    }
+
+    public void detachPostToUser(String userId, String postId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
+        usersCollection.document(userId).collection("posts").document(postId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                onComplete.accept(aVoid);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onFailure.accept(e);
+            }
+        });
     }
 
 }

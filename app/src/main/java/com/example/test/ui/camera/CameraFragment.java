@@ -114,13 +114,6 @@ public class CameraFragment extends Fragment {
                     if (isLocationEnabled()) {
                         if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
                             return;
                         }
                         final LocationManager locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
@@ -200,19 +193,34 @@ public class CameraFragment extends Fragment {
         Database.Post.addPost(post, new Consumer<Void>() {
             @Override
             public void accept(Void aVoid) {
-                progressDialog.dismiss();
-                Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
 
-                resetView();
+                Database.User.attachPostToUser(Auth.getUserId(), post.get_id(), new Consumer<Void>() {
+                    @Override
+                    public void accept(Void aVoid) {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
 
-                getFragmentManager().beginTransaction()
-                        .detach(fragment)
-                        .attach(fragment)
-                        .commit();
+                        resetView();
+
+                        getFragmentManager().beginTransaction()
+                                .detach(fragment)
+                                .attach(fragment)
+                                .commit();
+                    }
+                }, new Consumer<Exception>() {
+                    @Override
+                    public void accept(Exception e) {
+                        progressDialog.dismiss();
+                        e.printStackTrace();
+                    }
+                });
+
+
             }
         }, new Consumer<Exception>() {
             @Override
             public void accept(Exception e) {
+                progressDialog.dismiss();
                 e.printStackTrace();
             }
         });
