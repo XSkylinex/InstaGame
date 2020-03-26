@@ -30,6 +30,10 @@ public class PostAPI {
     private static CollectionReference postsCollection = FirebaseFirestore.getInstance()
             .collection("posts");
 
+    public String generatePostId(){
+        return postsCollection.document().getId();
+    }
+
     public void addPost(Post post, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         postsCollection.document(post.get_id()).set(post)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

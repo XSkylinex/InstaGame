@@ -46,12 +46,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-//        // TODO: Use the ViewModel
-//        mViewModel.getUsers().observe(getViewLifecycleOwner(), users -> {
-//            // update UI
-//        });
-
+//         TODO: Use the ViewModel
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

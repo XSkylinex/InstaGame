@@ -34,7 +34,6 @@ import java.util.function.Consumer;
 
 public class LoginFragment extends Fragment {
 
-//    private LoginViewModel mViewModel;
     private Button btnToRegister;
     private Button btnSignIn;
     private EditText et_email, et_password;
@@ -71,12 +70,6 @@ public class LoginFragment extends Fragment {
             public void onClick(View v) {
 
                 Navigation.findNavController(getView()).navigate(R.id.action_loginFragment_to_registerFragment);
-
-//                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentTransaction.replace(R.id.login_container, RegisterFragment.newInstance());
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
             }
         });
 

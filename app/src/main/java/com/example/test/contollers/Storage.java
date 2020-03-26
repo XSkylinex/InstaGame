@@ -18,18 +18,21 @@ public class Storage {
 
     private static StorageReference mStorageRef = FirebaseStorage.getInstance().getReference();
 
-    public static void uploadImage(File file,String name, Consumer<String> onComplete, Consumer<Exception> onFailure){
+    public static void uploadImage(File file,String name, Consumer<Uri> onComplete, Consumer<Exception> onFailure){
         Uri fileUri = Uri.fromFile(file);
         StorageReference reference = mStorageRef.child("images").child(name);
-
-        reference.putFile(fileUri)
+        // Create file metadata including the content type
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setContentType("image/jpg")
+                .build();
+        reference.putFile(fileUri,metadata)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
-                                onComplete.accept(uri.toString());
+                                onComplete.accept(uri);
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override

@@ -1,8 +1,7 @@
 package com.example.test.models;
 
-import android.location.Location;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,19 +13,19 @@ public class Post implements Serializable {
     private String _imageUrl;
     private String _userId;
     private String _content;
-    private Location _location;
+    private Coordinate _coordinate;
     private Date _date;
 
 
     private Post() {
     }
 
-    public Post(@NonNull final String _id, @NonNull final String _imageUrl, @NonNull final String _userId, @NonNull final  String _content, @NonNull final  Location _location, @NonNull final  Date _date) {
+    public Post(@NonNull final String _id, @NonNull final String _imageUrl, @NonNull final String _userId, @NonNull final  String _content, @Nullable final Coordinate _coordinate, @NonNull final  Date _date) {
         this._id = _id;
         this._imageUrl = _imageUrl;
         this._userId = _userId;
         this._content = _content;
-        this._location = _location;
+        this._coordinate = _coordinate;
         this._date = _date;
     }
 
@@ -35,10 +34,10 @@ public class Post implements Serializable {
         this._imageUrl = post._imageUrl;
         this._userId = post._userId;
         this._content = post._content;
-        this._location = post._location;
+        this._coordinate = post._coordinate;
         this._date = post._date;
     }
-
+    @NonNull
     public String get_id() {
         return _id;
     }
@@ -46,7 +45,7 @@ public class Post implements Serializable {
     public void set_id(@NonNull final String _id) {
          this._id = _id;
     }
-
+    @NonNull
     public String get_imageUrl() {
         return _imageUrl;
     }
@@ -54,7 +53,7 @@ public class Post implements Serializable {
     public void set_imageUrl(@NonNull final String _imageUrl) {
         this._imageUrl = _imageUrl;
     }
-
+    @NonNull
     public String get_userId() {
         return _userId;
     }
@@ -62,7 +61,7 @@ public class Post implements Serializable {
     public void set_userId(@NonNull final String _userId) {
         this._userId = _userId;
     }
-
+    @NonNull
     public String get_content() {
         return _content;
     }
@@ -70,15 +69,15 @@ public class Post implements Serializable {
     public void set_content(@NonNull final String _content) {
         this._content = _content;
     }
-
-    public Location get_location() {
-        return _location;
+    @Nullable
+    public Coordinate get_coordinate() {
+        return _coordinate;
     }
 
-    public void set_location(@NonNull final Location _location) {
-        this._location = _location;
+    public void set_coordinate(@Nullable final Coordinate _coordinate) {
+        this._coordinate = _coordinate;
     }
-
+    @NonNull
     public Date get_date() {
         return _date;
     }
@@ -114,7 +113,7 @@ public class Post implements Serializable {
                 ", _imageUrl='" + _imageUrl + '\'' +
                 ", _userId='" + _userId + '\'' +
                 ", _content='" + _content + '\'' +
-                ", _location=" + _location +
+                ", _coordinate=" + _coordinate +
                 ", _date=" + _date +
                 '}';
     }
