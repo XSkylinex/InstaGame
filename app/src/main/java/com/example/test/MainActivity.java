@@ -12,6 +12,7 @@ import android.view.WindowManager;
 
 import com.example.test.ui.camera.CameraFragment;
 import com.example.test.ui.main.MainFragment;
+import com.example.test.ui.search.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.nav_home:{
                         fragment = MainFragment.newInstance();
+                        break;
+                    }
+                    case R.id.nav_search:{
+                        fragment = SearchFragment.newInstance();
                         break;
                     }
                     case R.id.nav_add:{
