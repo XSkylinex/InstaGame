@@ -1,4 +1,4 @@
-package com.example.test.ui.search;
+package com.example.test.ui.userprofile;
 
 import android.util.Log;
 
@@ -6,14 +6,16 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Post;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public class SearchViewModel extends ViewModel {
+public class UserProfileViewModel extends ViewModel {
     // TODO: Implement the ViewModel
+
 
     private MutableLiveData<List<Post>> posts;
     public LiveData<List<Post>> getPosts() {
@@ -27,7 +29,7 @@ public class SearchViewModel extends ViewModel {
     private void loadPosts() {
         // Do an asynchronous operation to fetch users.
 
-        Database.Post.getPosts(new Consumer<List<Post>>() {
+        Database.Post.getPostsFromUser(Auth.getUserId(),new Consumer<List<Post>>() {
             @Override
             public void accept(List<Post> _posts) {
                 Log.d("Posts","get data from server");

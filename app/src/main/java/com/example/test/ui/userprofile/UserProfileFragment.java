@@ -1,4 +1,4 @@
-package com.example.test.ui.search;
+package com.example.test.ui.userprofile;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProviders;
@@ -22,21 +22,21 @@ import com.example.test.models.Post;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchFragment extends Fragment {
+public class UserProfileFragment extends Fragment {
 
-    private SearchViewModel mViewModel;
+    private UserProfileViewModel mViewModel;
 
     private PostImageAdapter imageAdapter;
 
-    public static SearchFragment newInstance() {
-        return new SearchFragment();
+    public static UserProfileFragment newInstance() {
+        return new UserProfileFragment();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.search_fragment, container, false);
+        return inflater.inflate(R.layout.user_profile_fragment, container, false);
     }
 
     @Override
@@ -50,9 +50,8 @@ public class SearchFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
         // TODO: Use the ViewModel
-
 
         final LiveData<List<Post>> posts = mViewModel.getPosts();
 
@@ -60,8 +59,6 @@ public class SearchFragment extends Fragment {
             Log.d("posts",posts1.toString());
             imageAdapter.addAll(posts1);
         });
-
-
     }
 
 }
