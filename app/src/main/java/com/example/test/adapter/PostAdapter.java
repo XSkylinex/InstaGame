@@ -16,6 +16,7 @@ import com.example.test.R;
 import com.example.test.models.Post;
 import com.example.test.models.User;
 import com.google.firebase.storage.FirebaseStorage;
+import com.squareup.picasso.Picasso;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -51,18 +52,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             useName.setText(user.get_userName());
             picDescription.setText(post.get_content());
 
-            // Download directly from StorageReference using Glide
-            // (See MyAppGlideModule for Loader registration)
-            Glide.with(context)
-                    .load(FirebaseStorage.getInstance().getReferenceFromUrl(post.get_imageUrl()))
-                    .into(this.picPost);
+            Picasso.get().load(post.get_imageUrl()).into(this.picPost);
 
-            // Download directly from StorageReference using Glide
-            // (See MyAppGlideModule for Loader registration)
+
             if (user.get_imageUrl() !=null) {
-                Glide.with(context)
-                        .load(FirebaseStorage.getInstance().getReferenceFromUrl(user.get_imageUrl()))
-                        .into(this.picUser);
+                Picasso.get().load(user.get_imageUrl()).into(this.picUser);
             }else {
                 this.picUser.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_profile));
             }
