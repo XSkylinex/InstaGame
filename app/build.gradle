@@ -59,6 +59,7 @@ dependencies {
 
 
     implementation 'com.github.dhaval2404:imagepicker-support:1.5'
+    implementation 'com.firebaseui:firebase-ui-storage:6.2.0'
 
 }
 apply plugin: "androidx.navigation.safeargs"

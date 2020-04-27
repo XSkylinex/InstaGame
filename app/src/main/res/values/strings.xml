@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">InstaGame</string>
+    <string name="post_photo">post photo</string>
 </resources>

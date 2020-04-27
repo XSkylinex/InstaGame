@@ -66,7 +66,7 @@ public class RegisterFragment extends Fragment {
                 Auth.SignUp(email, password, new Consumer<String>() {
                     @Override
                     public void accept(String userId) {
-                        User user = new User(userId,email,username);
+                        User user = new User(userId,email,username,null);
                         Database.User.addUser(user, new Consumer<Void>() {
                             @Override
                             public void accept(Void aVoid) {

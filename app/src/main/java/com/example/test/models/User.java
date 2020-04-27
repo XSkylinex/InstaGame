@@ -1,31 +1,40 @@
 package com.example.test.models;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 public class User implements Serializable {
 
+    @NonNull
     private String _id;
+    @NonNull
     private String _email;
+    @NonNull
     private String _userName;
+    @Nullable
+    private String _imageUrl;
     private boolean _isAdmin;
 
     private User(){}
 
-    public User(@NonNull final String _id, @NonNull final String _email, @NonNull final String _userName) {
-        this._id = _id;
-        this._email = _email;
-        this._userName = _userName;
-        this._isAdmin = false;
-    }
 
     private User(@NonNull final User user){
         this._id = user._id;
         this._email = user._email;
         this._userName = user._userName;
+        this._imageUrl = user._imageUrl;
         this._isAdmin = user._isAdmin;
+    }
+
+    public User(@NonNull String _id, @NonNull String _email, @NonNull String _userName, @Nullable String _imageUrl) {
+        this._id = _id;
+        this._email = _email;
+        this._userName = _userName;
+        this._imageUrl = _imageUrl;
+        this._isAdmin = false;
     }
 
     @NonNull
@@ -33,7 +42,7 @@ public class User implements Serializable {
         return _id;
     }
 
-    public void set_id(@NonNull final String _id) {
+    public void set_id(@NonNull String _id) {
         this._id = _id;
     }
 
@@ -42,7 +51,7 @@ public class User implements Serializable {
         return _email;
     }
 
-    public void set_email(@NonNull final String _email) {
+    public void set_email(@NonNull String _email) {
         this._email = _email;
     }
 
@@ -51,12 +60,25 @@ public class User implements Serializable {
         return _userName;
     }
 
-    public void set_userName(@NonNull final String _userName) {
+    public void set_userName(@NonNull String _userName) {
         this._userName = _userName;
+    }
+
+    @Nullable
+    public String get_imageUrl() {
+        return _imageUrl;
+    }
+
+    public void set_imageUrl(@Nullable String _imageUrl) {
+        this._imageUrl = _imageUrl;
     }
 
     public boolean is_isAdmin() {
         return _isAdmin;
+    }
+
+    public void set_isAdmin(boolean _isAdmin) {
+        this._isAdmin = _isAdmin;
     }
 
     @Override
@@ -72,18 +94,13 @@ public class User implements Serializable {
         return Objects.hash(_id);
     }
 
-    @NonNull
-    @Override
-    protected User clone() {
-        return new User(this);
-    }
-
     @Override
     public String toString() {
         return "User{" +
                 "_id='" + _id + '\'' +
                 ", _email='" + _email + '\'' +
                 ", _userName='" + _userName + '\'' +
+                ", _imageUrl='" + _imageUrl + '\'' +
                 ", _isAdmin=" + _isAdmin +
                 '}';
     }
