@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Consumer;
 
 import com.example.test.R;
 import com.example.test.models.Post;
@@ -57,7 +58,6 @@ public class PostImageAdapter extends ArrayAdapter<Post> {
         // Return the completed view to render on screen
         return convertView;
     }
-
 
     // View lookup cache
     private static class ViewHolder {

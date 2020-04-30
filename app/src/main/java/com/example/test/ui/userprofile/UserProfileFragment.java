@@ -8,16 +8,19 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.example.test.R;
 import com.example.test.adapter.PostImageAdapter;
 import com.example.test.models.Post;
+import com.example.test.ui.search.SearchFragmentDirections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +46,15 @@ public class UserProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         GridView gridview = (GridView) view.findViewById(R.id.usergridview);
         imageAdapter = new PostImageAdapter(getContext(),new ArrayList<>());
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Post post = imageAdapter.getItem(position);
+                final SearchFragmentDirections.ActionSearchFragmentToPostFragment action = SearchFragmentDirections.actionSearchFragmentToPostFragment(post.get_id());
+                Navigation.findNavController(getView()).navigate(action);
+
+            }
+        });
         gridview.setAdapter(imageAdapter);
         super.onViewCreated(view, savedInstanceState);
     }

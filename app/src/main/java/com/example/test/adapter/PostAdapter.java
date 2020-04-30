@@ -8,19 +8,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.test.R;
 import com.example.test.models.Post;
 import com.example.test.models.User;
-import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -58,13 +54,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             if (user.get_imageUrl() !=null) {
                 Picasso.get().load(user.get_imageUrl()).into(this.picUser);
             }else {
-                this.picUser.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_profile));
+//                this.picUser.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_profile));
             }
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public PostAdapter(Context context) {
+    public PostAdapter(Context contex) {
         this.context = context;
         mDataset = new ArrayList<>();
     }
