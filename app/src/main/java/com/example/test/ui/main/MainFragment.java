@@ -1,37 +1,29 @@
 package com.example.test.ui.main;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.test.LoginActivity;
-import com.example.test.MainActivity;
 import com.example.test.R;
 import com.example.test.adapter.PostAdapter;
-import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Post;
 import com.example.test.models.User;
 import com.example.test.models.listener.Listener;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class MainFragment extends Fragment {
 
@@ -42,18 +34,20 @@ public class MainFragment extends Fragment {
     private PostAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    private Map<String,User> postUserMap; // post id to user
-    private Map<String,userListenerCount> stringListenerMap; // user id to user listener
+    private Map<String,User> userMap; // user id to user
+    private Map<String, UserListenerCount> stringListenerMap; // user id to user listener
+
+    private Listener postListener=null;
 
 
-    private static class userListenerCount{
+    private static class UserListenerCount {
         @NonNull
         public String userid;
         @NonNull
         public Listener userListener;
         public int count;
 
-        public userListenerCount(@NonNull String userid, @NonNull Listener userListener) {
+        public UserListenerCount(@NonNull String userid, @NonNull Listener userListener) {
             this.userid = userid;
             this.userListener = userListener;
             this.count = 0;
@@ -70,7 +64,7 @@ public class MainFragment extends Fragment {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            userListenerCount that = (userListenerCount) o;
+            UserListenerCount that = (UserListenerCount) o;
             return userid.equals(that.userid);
         }
 
@@ -88,11 +82,14 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Log.d("MainFragment","onCreateView");
         return inflater.inflate(R.layout.main_fragment, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.d("MainFragment","onViewCreated");
 
 //        btn_logout = (Button) view.findViewById(R.id.btn_logout);
         recyclerView = (RecyclerView) view.findViewById(R.id.my_recycler_view);
@@ -109,15 +106,16 @@ public class MainFragment extends Fragment {
         mAdapter = new PostAdapter(getContext());
         recyclerView.setAdapter(mAdapter);
 
-        postUserMap=new HashMap<>();
+        userMap =new HashMap<>();
         stringListenerMap = new HashMap<>();
 
-        super.onViewCreated(view, savedInstanceState);
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.d("MainFragment","onActivityCreated");
 //         TODO: Use the ViewModel
 //        btn_logout.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -131,49 +129,61 @@ public class MainFragment extends Fragment {
 //            }
 //        });
 
-        Listener listener = Database.Post.listenPostsChanges(new Consumer<Post>() {
+        this.postListener = Database.Post.listenPostsChanges(new Consumer<Post>() {
             @Override
             public void accept(Post post) {
                 // added post
-
-                stringListenerMap.computeIfAbsent(post.get_userId(), new Function<String, userListenerCount>() {
-                    @Override
-                    public userListenerCount apply(String userId) {
-                        Listener userListener = Database.User.listenUser(userId, new Consumer<User>() {
-                            @Override
-                            public void accept(User user) {
-                                postUserMap.put(post.get_id(),user); //get connect between user and post
-                                mAdapter.updateData(post,user); //display information
-                            }
-                        }, new Consumer<Exception>() {
-                            @Override
-                            public void accept(Exception e) {
-
-                            }
-                        });
-
-                        return new userListenerCount(userId,userListener);
-                    }
-                }).addListener();
-
+                Log.d("MainFragment","on post added: "+post.get_id());
+                final String postUserId = post.get_userId();
+                if (!userMap.containsKey(postUserId)) {
+                    final Listener userListener = Database.User.listenUser(postUserId, new Consumer<User>() {
+                        @Override
+                        public void accept(User user) {
+                            userMap.put(postUserId,user); //get connect between user and post
+                            mAdapter.updateData(post,user); //display information
+                            final UserListenerCount userListenerCount = stringListenerMap.get(postUserId); // sync problem
+                            assert userListenerCount != null;
+                            userListenerCount.addListener();
+                            Log.d("MainFragment","user listener added for "+postUserId+"\t count: "+ userListenerCount.count);
+                        }
+                    }, new Consumer<Exception>() {
+                        @Override
+                        public void accept(Exception e) {
+                            Log.e("MainFragment","Error: "+e.getMessage());
+                            e.printStackTrace();
+                        }
+                    });
+                    stringListenerMap.put(postUserId,new UserListenerCount(postUserId, userListener));
+                }else{
+                    mAdapter.updateData(post,userMap.get(postUserId)); //display information
+                    final UserListenerCount userListenerCount = stringListenerMap.get(postUserId);
+                    assert userListenerCount != null;
+                    userListenerCount.addListener();
+                    Log.d("MainFragment","user listener added for "+postUserId+"\t count: "+ userListenerCount.count);
+                }
             }
         }, new Consumer<Post>() {
             @Override
             public void accept(Post post) {
                 // modified post
-                mAdapter.updateData(post,postUserMap.get(post.get_id()));
+                Log.d("MainFragment","on post modified: "+post.get_id());
+                mAdapter.updateData(post, userMap.get(post.get_userId()));
             }
         }, new Consumer<Post>() {
             @Override
             public void accept(Post post) { // remove connection from user when deleted post
                 // remove post
+                Log.d("MainFragment","on post removed: "+post.get_id());
                 mAdapter.removeData(post); //delete post
-                postUserMap.remove(post.get_id()); //deleted the pointer from post to user
-                userListenerCount userListenerCount = stringListenerMap.get(post.get_id());
+                UserListenerCount userListenerCount = stringListenerMap.get(post.get_userId());
+                assert userListenerCount != null;
                 userListenerCount.removerListener();//this post not anymore liston to user
+                Log.d("MainFragment","user listener removed for "+post.get_id()+"\t count: "+ userListenerCount.count);
                 if (userListenerCount.count <= 0){ // if no one left listen to this user
                     userListenerCount.userListener.remove(); // remove connection
-                    stringListenerMap.remove(post.get_id()); //
+                    stringListenerMap.remove(post.get_userId()); //
+                    userMap.remove(post.get_userId()); //
+                    Log.d("MainFragment","user listener removed for "+post.get_id()+"\t removed");
                 }
 
 
@@ -182,10 +192,31 @@ public class MainFragment extends Fragment {
             @Override
             public void accept(Exception e) {
                 // on error
-
+                Log.e("MainFragment","Error: "+e.getMessage());
+                e.printStackTrace();
             }
         });
 
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("MainFragment","onDestroyView");
+
+        if (this.postListener!=null){
+            this.postListener.remove();
+        }
+        userMap.clear();
+        stringListenerMap.forEach(new BiConsumer<String, UserListenerCount>() {
+            @Override
+            public void accept(String userId, UserListenerCount userListenerCount) {
+                Log.d("MainFragment","clear connection for "+userId+" had "+userListenerCount.count+" connection");
+                userListenerCount.removerListener();
+            }
+        });
+        stringListenerMap.clear();
 
     }
 
