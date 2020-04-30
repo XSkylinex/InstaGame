@@ -9,7 +9,11 @@
         android:id="@+id/mainFragment"
         android:name="com.example.test.ui.main.MainFragment"
         android:label="main_fragment"
-        tools:layout="@layout/main_fragment" />
+        tools:layout="@layout/main_fragment" >
+        <action
+            android:id="@+id/action_mainFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
+    </fragment>
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.example.test.ui.camera.CameraFragment"
@@ -38,6 +42,18 @@
         android:name="com.example.test.PostFragment"
         android:label="fragment_post"
         tools:layout="@layout/fragment_post" >
+        <argument
+            android:name="postId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_postFragment_to_commentFragment"
+            app:destination="@id/commentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/commentFragment"
+        android:name="com.example.test.CommentFragment"
+        android:label="fragment_comment"
+        tools:layout="@layout/fragment_comment" >
         <argument
             android:name="postId"
             app:argType="string" />

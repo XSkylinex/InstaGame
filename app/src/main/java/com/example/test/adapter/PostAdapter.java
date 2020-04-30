@@ -5,9 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
@@ -19,50 +22,67 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> {
     private List<Map.Entry<Post, User>> mDataset;
+    private Consumer<User> travelToUserProfile;
+    private Consumer<Post> travelToPostComment;
     private Context context;
-
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        private Context context;
         private TextView useName;
         private TextView picDescription;
         private ImageView picUser;
         private ImageView picPost;
-
+        private AppCompatImageButton btn_toComment;
+        private Context context;
         public MyViewHolder(View view,Context context){
             super(view);
-            this.context = context;
             this.picDescription = view.findViewById(R.id.userPostDiscription);
             this.useName = view.findViewById(R.id.userNameProfile);
             this.picUser = view.findViewById(R.id.picUserPhotoCell);
             this.picPost = view.findViewById(R.id.userPic);
+            this.btn_toComment = view.findViewById(R.id.btn_toComment);
+            this.context = context;
         }
 
-        public void setData(Post post,User user){
-            useName.setText(user.get_userName());
-            picDescription.setText(post.get_content());
+        public void setData(final Post post,final User user,final Consumer<User> travelToUserProfile,final Consumer<Post> travelToPostComment){
+            this.useName.setText(user.get_userName());
+            this.picDescription.setText(post.get_content());
 
             Picasso.get().load(post.get_imageUrl()).into(this.picPost);
-
-
             if (user.get_imageUrl() !=null) {
                 Picasso.get().load(user.get_imageUrl()).into(this.picUser);
             }else {
-//                this.picUser.setImageDrawable(ContextCompat.getDrawable(context,R.drawable.ic_profile));
+                this.picUser.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_profile,null));
             }
+
+
+            this.useName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    travelToUserProfile.accept(user);
+                }
+            });
+            this.btn_toComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    travelToPostComment.accept(post);
+                }
+            });
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public PostAdapter(Context contex) {
+    public PostAdapter(Context context,Consumer<User> travelToUserProfile, Consumer<Post> travelToPostComment) {
         this.context = context;
-        mDataset = new ArrayList<>();
+        this.mDataset = new ArrayList<>();
+        this.travelToUserProfile = travelToUserProfile;
+        this.travelToPostComment = travelToPostComment;
     }
 
     // Create new views (invoked by the layout manager)
@@ -79,7 +99,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     public void onBindViewHolder(MyViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.setData(mDataset.get(position).getKey(),mDataset.get(position).getValue());
+        holder.setData(mDataset.get(position).getKey(),mDataset.get(position).getValue(),this.travelToUserProfile,this.travelToPostComment);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,7 +34,7 @@ public class PostFragment extends Fragment {
     private Listener userListener = null;
     private Listener postListener = null;
     // TODO: Rename and change types and number of parameters
-    public static PostFragment newInstance(String param1, String param2) {
+    public static PostFragment newInstance() {
         return new PostFragment();
     }
 
@@ -58,7 +59,20 @@ public class PostFragment extends Fragment {
         rv_post.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new PostAdapter(getContext());
+        mAdapter = new PostAdapter(getContext(), new Consumer<User>() {
+            @Override
+            public void accept(User user) {
+                Log.d("PostFragment","travel to user profile :"+user.get_id());
+            }
+        }, new Consumer<Post>() {
+            @Override
+            public void accept(Post post) {
+                Log.d("PostFragment","travel to comment of post :"+post.get_id());
+                // safeArgs
+                final PostFragmentDirections.ActionPostFragmentToCommentFragment action = PostFragmentDirections.actionPostFragmentToCommentFragment(post.get_id());
+                Navigation.findNavController(getView()).navigate(action);
+            }
+        });
         rv_post.setAdapter(mAdapter);
     }
 

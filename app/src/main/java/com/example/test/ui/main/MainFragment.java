@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -103,7 +104,19 @@ public class MainFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new PostAdapter(getContext());
+        mAdapter = new PostAdapter(getContext(), new Consumer<User>() {
+            @Override
+            public void accept(User user) {
+                Log.d("MainFragment","travel to user profile :"+user.get_id());
+            }
+        }, new Consumer<Post>() {
+            @Override
+            public void accept(Post post) {
+                Log.d("MainFragment","travel to comment of post :"+post.get_id());
+                final MainFragmentDirections.ActionMainFragmentToCommentFragment action = MainFragmentDirections.actionMainFragmentToCommentFragment(post.get_id());
+                Navigation.findNavController(getView()).navigate(action);
+            }
+        });
         recyclerView.setAdapter(mAdapter);
 
         userMap =new HashMap<>();
