@@ -1,8 +1,13 @@
 package com.example.test;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -15,55 +20,40 @@ import com.example.test.ui.main.MainFragment;
 import com.example.test.ui.search.SearchFragment;
 import com.example.test.ui.userprofile.UserProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    BottomNavigationView bottomNavigationView;
-
+    NavController navController;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.main_activity);
-        getSupportActionBar().hide();
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
-                    .commitNow();
-        }
+//        getSupportActionBar().hide();
 
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment fragment=null;
-                switch (item.getItemId()){
-                    case R.id.nav_home:{
-                        fragment = MainFragment.newInstance();
-                        break;
-                    }
-                    case R.id.nav_search:{
-                        fragment = SearchFragment.newInstance();
-                        break;
-                    }
-                    case R.id.nav_add:{
-                        fragment = CameraFragment.newInstance();
-                        break;
-                    }
-                    case R.id.nav_profile:{
-                        fragment = UserProfileFragment.newInstance();
-                        break;
-                    }
-                }
+        navController = Navigation.findNavController(this,R.id.main_navhost_frag);
+        NavigationUI.setupActionBarWithNavController(this,navController);
+        BottomNavigationView bottomNavigationView =
+                findViewById(R.id.bottomNavigationView);
+        NavigationUI.setupWithNavController(bottomNavigationView,navController);
 
-                if (fragment!=null){
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container, fragment)
-                            .commitNow();
-                }
 
-                return true;
-            }
+        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
+          @Override
+          public void onDestinationChanged(@NonNull NavController
+                                                   controller, @NonNull NavDestination destination, @Nullable Bundle
+                                                   arguments) {
+              getSupportActionBar().setTitle(destination.getLabel());
+          }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            return navController.navigateUp();
+        }else{
+            return NavigationUI.onNavDestinationSelected(item,navController);
+        }
     }
 }
