@@ -1,20 +1,7 @@
 package com.example.test.ui.login;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.Navigator;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,14 +9,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+
 import com.example.test.MainActivity;
 import com.example.test.R;
 import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.User;
-import com.example.test.ui.register.RegisterFragment;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 public class LoginFragment extends Fragment {

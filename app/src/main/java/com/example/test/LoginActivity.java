@@ -15,7 +15,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+//        Auth.signOut(); //TODO
         if (Auth.isSignIn()){
 
             Intent intent = new Intent(this, MainActivity.class);
@@ -27,10 +27,5 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         setContentView(R.layout.login_activity);
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.login_container, LoginFragment.newInstance())
-//                    .commitNow();
-//        }
     }
 }

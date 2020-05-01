@@ -15,6 +15,7 @@ public class MainViewModel extends ViewModel {
     // TODO: Implement the ViewModel
 
     private MutableLiveData<List<String>> users;
+    //real time live data from the server
     public LiveData<List<String>> getUsers() {
         if (users == null) {
             users = new MutableLiveData<List<String>>();

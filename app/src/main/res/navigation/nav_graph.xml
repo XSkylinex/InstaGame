@@ -75,5 +75,8 @@
         <argument
             android:name="userId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_otherUserProfileFragment_to_postFragment"
+            app:destination="@id/postFragment" />
     </fragment>
 </navigation>
