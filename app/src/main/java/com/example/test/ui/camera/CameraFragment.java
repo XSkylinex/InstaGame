@@ -95,7 +95,7 @@ public class CameraFragment extends Fragment {
             public void onClick(View v) {
                 ImagePicker.Companion.with(fragment)
                         .cropSquare()                //Crop image(Optional), Check Customization for more option
-                        .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                        .compress(2048)            //Final image size will be less than 1 MB(Optional)
                         .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
                         .start(PICK_IMAGE);
             }

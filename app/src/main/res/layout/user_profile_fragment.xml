@@ -18,10 +18,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0">
 
-        <ImageView
+        <com.example.test.view.SquareImageView
             android:id="@+id/iv_user_pic"
             android:layout_width="90dp"
-            android:layout_height="81dp"
+            android:layout_height="90dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:src="@drawable/ic_profile"
@@ -35,7 +35,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="username"
-            app:layout_constraintEnd_toStartOf="@+id/textView3"
+            app:layout_constraintEnd_toStartOf="@+id/tv_Posts"
             app:layout_constraintStart_toEndOf="@+id/iv_user_pic"
             app:layout_constraintTop_toTopOf="@+id/iv_user_pic" />
 
@@ -51,7 +51,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_UserFullName" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/tv_Posts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -68,25 +68,26 @@
             android:layout_marginBottom="24dp"
             android:text="0"
             app:layout_constraintBottom_toBottomOf="@+id/tv_userDiscripsion"
-            app:layout_constraintEnd_toEndOf="@+id/textView3"
-            app:layout_constraintStart_toStartOf="@+id/textView3"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+            app:layout_constraintEnd_toEndOf="@+id/tv_Posts"
+            app:layout_constraintStart_toStartOf="@+id/tv_Posts"
+            app:layout_constraintTop_toBottomOf="@+id/tv_Posts" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <GridView
         android:id="@+id/usergridview"
+
+
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:gravity="center"
         android:horizontalSpacing="8dp"
-        android:numColumns="auto_fit"
+
+        android:numColumns="3"
         android:stretchMode="columnWidth"
         android:verticalSpacing="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
 
-    </GridView>
 </androidx.constraintlayout.widget.ConstraintLayout>
