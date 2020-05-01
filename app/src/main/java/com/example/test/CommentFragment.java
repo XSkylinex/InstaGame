@@ -1,5 +1,6 @@
 package com.example.test;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,20 +8,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.adapter.CommentAdapter;
+import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Comment;
 import com.example.test.models.User;
 import com.example.test.models.listener.Listener;
 import com.example.test.ui.main.MainFragment;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -111,6 +116,7 @@ public class CommentFragment extends Fragment {
             }
         });
         rv_comments.setAdapter(mAdapter);
+
     }
 
     @Override
@@ -185,6 +191,36 @@ public class CommentFragment extends Fragment {
             public void accept(Exception e) {
                 Log.e("CommentFragment","Error: "+e.getMessage());
                 e.printStackTrace();
+            }
+        });
+
+        btn_comment_send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String comment_text = et_comment.getText() + "";
+
+                if (comment_text.isEmpty()){
+                    Toast.makeText(getContext(), "Please enter text", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!Auth.isSignIn()){
+                    Toast.makeText(getContext(), "You must be login to comment", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Date date = new Date(System.currentTimeMillis());
+                Comment comment = new Comment(Database.Comment.generateCommentId(),postId, Auth.getUserId(), comment_text, date);
+                Database.Comment.addComment(comment, new Consumer<Void>() {
+                    @Override
+                    public void accept(Void aVoid) {
+                        Toast.makeText(getContext(), "Comment send!", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Consumer<Exception>() {
+                    @Override
+                    public void accept(Exception e) {
+                        Log.e("CommentFragment","Error: "+e.getMessage());
+                        e.printStackTrace();
+                    }
+                });
             }
         });
     }

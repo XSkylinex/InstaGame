@@ -112,11 +112,11 @@ public class CameraFragment extends Fragment {
                         requestPermissions();
                     }
                     if (isLocationEnabled()) {
-                        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             return;
                         }
-                        final LocationManager locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
+                        final LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
                         final LocationListener locationListener = new LocationListener() {
                             @Override
                             public void onLocationChanged(Location location) {
@@ -141,6 +141,7 @@ public class CameraFragment extends Fragment {
                                 Log.d("Latitude", "status");
                             }
                         };
+                        assert locationManager != null;
                         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
                         Log.d("Post","task location");
                     }else{

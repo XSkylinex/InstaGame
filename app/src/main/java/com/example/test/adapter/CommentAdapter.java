@@ -31,19 +31,19 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_user_comment;
-        private TextView tv_commnet_username;
+        private TextView tv_comment_username;
         private ImageView iv_user_image;
         private Context context;
         MyViewHolder(View view, Context context){
             super(view);
             this.tv_user_comment = view.findViewById(R.id.tv_user_comment);
-            this.tv_commnet_username = view.findViewById(R.id.tv_commnet_username);
+            this.tv_comment_username = view.findViewById(R.id.tv_comment_username);
             this.iv_user_image = view.findViewById(R.id.iv_user_image);
             this.context = context;
         }
 
         void setData(final Comment comment, final User user, final Consumer<User> travelToUserProfile){
-            this.tv_commnet_username.setText(user.get_userName());
+            this.tv_comment_username.setText(user.get_userName());
             this.tv_user_comment.setText(comment.get_content());
 
             if (user.get_imageUrl() !=null) {
@@ -52,8 +52,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
                 this.iv_user_image.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(),R.drawable.ic_profile,null));
             }
 
-
-            this.tv_commnet_username.setOnClickListener(v -> travelToUserProfile.accept(user));
+            this.tv_comment_username.setOnClickListener(v -> travelToUserProfile.accept(user));
+            this.iv_user_image.setOnClickListener(v -> travelToUserProfile.accept(user));
         }
     }
 
@@ -67,7 +67,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
     @Override
     public CommentAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                        int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_call,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.comment_call,parent,false);
         return new MyViewHolder(v, this.context);
     }
 

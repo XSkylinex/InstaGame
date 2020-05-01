@@ -50,7 +50,7 @@ public class UserProfileFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Post post = imageAdapter.getItem(position);
-                final SearchFragmentDirections.ActionSearchFragmentToPostFragment action = SearchFragmentDirections.actionSearchFragmentToPostFragment(post.get_id());
+                final UserProfileFragmentDirections.ActionUserProfileFragmentToPostFragment action = UserProfileFragmentDirections.actionUserProfileFragmentToPostFragment(post.get_id());
                 Navigation.findNavController(getView()).navigate(action);
 
             }

@@ -30,6 +30,10 @@ public class CommentAPI {
     private static CollectionReference commentsCollection = FirebaseFirestore.getInstance()
             .collection("comments");
 
+    public String generateCommentId(){
+        return commentsCollection.document().getId();
+    }
+
     public void addComment(Comment comment, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         commentsCollection.document(comment.get_id()).set(comment)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
