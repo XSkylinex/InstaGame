@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -113,6 +114,9 @@ public class CommentFragment extends Fragment {
             @Override
             public void accept(User user) {
                 Log.d("PostFragment","travel to user profile :"+user.get_id());
+                final CommentFragmentDirections.ActionCommentFragmentToOtherUserProfileFragment action =
+                        CommentFragmentDirections.actionCommentFragmentToOtherUserProfileFragment(user.get_id());
+                Navigation.findNavController(getView()).navigate(action);
             }
         });
         rv_comments.setAdapter(mAdapter);

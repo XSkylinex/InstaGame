@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_mainFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_otherUserProfileFragment"
+            app:destination="@id/otherUserProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"
@@ -48,6 +51,9 @@
         <action
             android:id="@+id/action_postFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
+        <action
+            android:id="@+id/action_postFragment_to_otherUserProfileFragment"
+            app:destination="@id/otherUserProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/commentFragment"
@@ -56,6 +62,18 @@
         tools:layout="@layout/fragment_comment" >
         <argument
             android:name="postId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_commentFragment_to_otherUserProfileFragment"
+            app:destination="@id/otherUserProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/otherUserProfileFragment"
+        android:name="com.example.test.otherUserProfileFragment"
+        android:label="fragment_other_user_profile"
+        tools:layout="@layout/fragment_other_user_profile" >
+        <argument
+            android:name="userId"
             app:argType="string" />
     </fragment>
 </navigation>

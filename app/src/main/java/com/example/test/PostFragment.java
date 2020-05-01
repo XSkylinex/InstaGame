@@ -63,6 +63,8 @@ public class PostFragment extends Fragment {
             @Override
             public void accept(User user) {
                 Log.d("PostFragment","travel to user profile :"+user.get_id());
+                final PostFragmentDirections.ActionPostFragmentToOtherUserProfileFragment action = PostFragmentDirections.actionPostFragmentToOtherUserProfileFragment(user.get_id());
+                Navigation.findNavController(getView()).navigate(action);
             }
         }, new Consumer<Post>() {
             @Override

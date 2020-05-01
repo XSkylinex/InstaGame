@@ -13,6 +13,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.test.PostFragmentDirections;
 import com.example.test.R;
 import com.example.test.adapter.PostAdapter;
 import com.example.test.contollers.database.Database;
@@ -108,6 +109,8 @@ public class MainFragment extends Fragment {
             @Override
             public void accept(User user) {
                 Log.d("MainFragment","travel to user profile :"+user.get_id());
+                final MainFragmentDirections.ActionMainFragmentToOtherUserProfileFragment action = MainFragmentDirections.actionMainFragmentToOtherUserProfileFragment(user.get_id());
+                Navigation.findNavController(getView()).navigate(action);
             }
         }, new Consumer<Post>() {
             @Override
