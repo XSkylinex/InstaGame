@@ -3,6 +3,8 @@ package com.example.test.models;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -106,6 +108,7 @@ public class Post implements Serializable {
     }
 
 
+    @NotNull
     @Override
     public String toString() {
         return "Post{" +

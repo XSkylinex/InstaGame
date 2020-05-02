@@ -2,8 +2,6 @@ package com.example.test.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.View.MeasureSpec;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;

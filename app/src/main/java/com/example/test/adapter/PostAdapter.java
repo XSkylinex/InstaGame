@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +16,8 @@ import com.example.test.R;
 import com.example.test.models.Post;
 import com.example.test.models.User;
 import com.squareup.picasso.Picasso;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         private TextView useName;
         private TextView picDescription;
@@ -40,7 +41,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         private ImageView picPost;
         private AppCompatImageButton btn_toComment;
         private Context context;
-        public MyViewHolder(View view,Context context){
+        MyViewHolder(View view, Context context){
             super(view);
             this.picDescription = view.findViewById(R.id.userPostDiscription);
             this.useName = view.findViewById(R.id.userNameProfile);
@@ -50,7 +51,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             this.context = context;
         }
 
-        public void setData(final Post post,final User user,final Consumer<User> travelToUserProfile,final Consumer<Post> travelToPostComment){
+        void setData(final Post post, final User user, final Consumer<User> travelToUserProfile, final Consumer<Post> travelToPostComment){
             this.useName.setText(user.get_userName());
             this.picDescription.setText(post.get_content());
 
@@ -62,18 +63,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             }
 
 
-            this.useName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    travelToUserProfile.accept(user);
-                }
-            });
-            this.btn_toComment.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    travelToPostComment.accept(post);
-                }
-            });
+            this.useName.setOnClickListener(v -> travelToUserProfile.accept(user));
+            this.btn_toComment.setOnClickListener(v -> travelToPostComment.accept(post));
         }
     }
 
@@ -86,6 +77,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     }
 
     // Create new views (invoked by the layout manager)
+    @NotNull
     @Override
     public PostAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                        int viewType) {

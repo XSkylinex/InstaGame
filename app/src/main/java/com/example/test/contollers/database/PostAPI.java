@@ -1,15 +1,11 @@
 package com.example.test.contollers.database;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.test.models.Post;
 import com.example.test.models.listener.Listener;
 import com.example.test.models.listener.ListenerFirebaseAdapter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,38 +32,22 @@ public class PostAPI {
 
     public void addPost(Post post, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         postsCollection.document(post.get_id()).set(post)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            onComplete.accept(null);
-                        }else{
-                            onFailure.accept(task.getException());
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        onComplete.accept(null);
+                    }else{
+                        onFailure.accept(task.getException());
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+                }).addOnFailureListener(onFailure::accept);
     }
 
     public void getPost(String postId, Consumer<Post> onComplete, Consumer<Exception> onFailure){
         postsCollection.document(postId).get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Post post = documentSnapshot.toObject(Post.class);
-                        onComplete.accept(post);
-                    }
+                .addOnSuccessListener(documentSnapshot -> {
+                    Post post = documentSnapshot.toObject(Post.class);
+                    onComplete.accept(post);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        onFailure.accept(e);
-                    }
-                });
+                .addOnFailureListener(onFailure::accept);
     }
 
 
@@ -153,95 +133,64 @@ public class PostAPI {
                 }
                 onComplete.accept(posts);
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+        }).addOnFailureListener(onFailure::accept);
     }
 
     public void deletePost(String postId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         postsCollection.document(postId).delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        onComplete.accept(null);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+                .addOnSuccessListener(aVoid -> onComplete.accept(null)).addOnFailureListener(onFailure::accept);
     }
 
     public void updatePost(Post post, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         postsCollection.document(post.get_id()).set(post)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        onComplete.accept(null);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+                .addOnSuccessListener(aVoid -> onComplete.accept(null)).addOnFailureListener(onFailure::accept);
 
     }
 
     public Listener listenPostsFromUser(String userId, Consumer<List<Post>> onComplete, Consumer<Exception> onFailure){
         ListenerRegistration listenerRegistration =
                 postsCollection.whereEqualTo("_userId",userId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    onFailure.accept(e);
-                    return;
-                }
-                assert queryDocumentSnapshots != null;
-                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
-                List<Post> posts = new ArrayList<>();
-                for (DocumentSnapshot doc : documents) {
-                    posts.add(doc.toObject(Post.class));
-                }
-                onComplete.accept(posts);
-            }
-        });
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        onFailure.accept(e);
+                        return;
+                    }
+                    assert queryDocumentSnapshots != null;
+                    List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+                    List<Post> posts = new ArrayList<>();
+                    for (DocumentSnapshot doc : documents) {
+                        posts.add(doc.toObject(Post.class));
+                    }
+                    onComplete.accept(posts);
+                });
         return new ListenerFirebaseAdapter(listenerRegistration);
     }
 
     public Listener listenPostsChangesFromUser(String userId,Consumer<Post> onAdded, Consumer<Post> onModified, Consumer<Post> onRemoved, Consumer<Exception> onFailure){
         ListenerRegistration listenerRegistration =
                 postsCollection.whereEqualTo("_userId",userId)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    onFailure.accept(e);
-                    return;
-                }
-                assert queryDocumentSnapshots != null;
-                List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
-                for (DocumentChange documentChange : documentChanges) {
-                    Post post = documentChange.getDocument().toObject(Post.class);
-                    switch (documentChange.getType()) {
-                        case ADDED:
-                            onAdded.accept(post);
-                            break;
-                        case MODIFIED:
-                            onModified.accept(post);
-                            break;
-                        case REMOVED:
-                            onRemoved.accept(post);
-                            break;
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        onFailure.accept(e);
+                        return;
                     }
-                }
-            }
-        });
+                    assert queryDocumentSnapshots != null;
+                    List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
+                    for (DocumentChange documentChange : documentChanges) {
+                        Post post = documentChange.getDocument().toObject(Post.class);
+                        switch (documentChange.getType()) {
+                            case ADDED:
+                                onAdded.accept(post);
+                                break;
+                            case MODIFIED:
+                                onModified.accept(post);
+                                break;
+                            case REMOVED:
+                                onRemoved.accept(post);
+                                break;
+                        }
+                    }
+                });
         return new ListenerFirebaseAdapter(listenerRegistration);
     }
 
@@ -258,12 +207,7 @@ public class PostAPI {
                 }
                 onComplete.accept(posts);
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+        }).addOnFailureListener(onFailure::accept);
     }
 
 }

@@ -1,12 +1,15 @@
 package com.example.test.models.listener;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.firestore.ListenerRegistration;
 
 public class ListenerFirebaseAdapter implements Listener {
 
-    ListenerRegistration listenerRegistration;
+    @NonNull
+    private final ListenerRegistration listenerRegistration;
 
-    public ListenerFirebaseAdapter(ListenerRegistration listenerRegistration) {
+    public ListenerFirebaseAdapter(@NonNull ListenerRegistration listenerRegistration) {
         this.listenerRegistration = listenerRegistration;
     }
 

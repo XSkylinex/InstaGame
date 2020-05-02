@@ -4,24 +4,21 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.util.Consumer;
 
 import com.example.test.R;
 import com.example.test.models.Post;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 public class PostImageAdapter extends ArrayAdapter<Post> {
 
-//    private int lastPosition = -1;
 
 
     public PostImageAdapter(Context context, ArrayList<Post> posts) {
@@ -29,7 +26,7 @@ public class PostImageAdapter extends ArrayAdapter<Post> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NotNull ViewGroup parent) {
         // Get the data item for this position
         Post post = getItem(position);
         ViewHolder holder;
@@ -64,7 +61,7 @@ public class PostImageAdapter extends ArrayAdapter<Post> {
         ImageView ivPostImage;
 
         ViewHolder(View convertView) {
-            ivPostImage = (ImageView) convertView.findViewById(R.id.iv_post_image);
+            ivPostImage = convertView.findViewById(R.id.iv_post_image);
         }
 
         void setData(@NonNull Post post){

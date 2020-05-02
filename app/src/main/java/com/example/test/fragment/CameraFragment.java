@@ -1,4 +1,4 @@
-package com.example.test.ui.camera;
+package com.example.test.fragment;
 
 import android.Manifest;
 import android.app.Activity;
@@ -37,16 +37,12 @@ import com.github.dhaval2404.imagepicker.ImagePicker;
 
 import java.io.File;
 import java.util.Date;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 public class CameraFragment extends Fragment {
 
-    public static final int PICK_IMAGE = 123;
-    public static final int PERMISSION_ID = 44;
+    private static final int PICK_IMAGE = 123;
+    private static final int PERMISSION_ID = 44;
 
-
-//    private CameraViewModel mViewModel;
 
     private ImageButton imagePost;
     private EditText postText;
@@ -56,9 +52,6 @@ public class CameraFragment extends Fragment {
     private File file_image = null;
     private Location lastLocation = null;
 
-    public static CameraFragment newInstance() {
-        return new CameraFragment();
-    }
 
     @Nullable
     @Override
@@ -70,10 +63,10 @@ public class CameraFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
-        imagePost = (ImageButton) view.findViewById(R.id.ib_image_post);
-        postText = (EditText) view.findViewById(R.id.et_post_text);
-        btnUpload = (Button) view.findViewById(R.id.btn_upload_post);
-        gpsSwitch = (Switch) view.findViewById(R.id.switch_use_gps);
+        imagePost = view.findViewById(R.id.ib_image_post);
+        postText = view.findViewById(R.id.et_post_text);
+        btnUpload = view.findViewById(R.id.btn_upload_post);
+        gpsSwitch = view.findViewById(R.id.switch_use_gps);
 
         postText.setText("");
 
@@ -86,20 +79,15 @@ public class CameraFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        mViewModel = ViewModelProviders.of(this).get(CameraViewModel.class);
-        // TODO: Use the ViewModel
+
+
         final Fragment fragment = this;
 
-        imagePost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ImagePicker.Companion.with(fragment)
-                        .cropSquare()                //Crop image(Optional), Check Customization for more option
-                        .compress(2048)            //Final image size will be less than 1 MB(Optional)
-                        .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-                        .start(PICK_IMAGE);
-            }
-        });
+        imagePost.setOnClickListener(v -> ImagePicker.Companion.with(fragment)
+                .cropSquare()                //Crop image(Optional), Check Customization for more option
+                .compress(2048)            //Final image size will be less than 1 MB(Optional)
+                .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+                .start(PICK_IMAGE));
         gpsSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -113,7 +101,7 @@ public class CameraFragment extends Fragment {
                     }
                     if (isLocationEnabled()) {
                         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             return;
                         }
                         final LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -155,29 +143,19 @@ public class CameraFragment extends Fragment {
         });
 
 
-        btnUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (file_image != null && Auth.isSignIn()) {
-                    final ProgressDialog progressDialog = new ProgressDialog(getContext());
-                    progressDialog.setMessage("Posting...");
-                    progressDialog.show();
-                    final String postId = Database.Post.generatePostId();
-                    Storage.uploadImage(file_image, "posts/"+postId+".jpg", new Consumer<Uri>() {
-                        @Override
-                        public void accept(final Uri uri) {
-                            uploadPost(postId,lastLocation,uri,progressDialog);
-                        }
-                    }, new Consumer<Exception>() {
-                        @Override
-                        public void accept(Exception e) {
-                            e.printStackTrace();
-                            progressDialog.dismiss();
-                            Toast.makeText(getContext(), "Failed to upload image\ntry again later", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+        btnUpload.setOnClickListener(v -> {
+            if (file_image != null && Auth.isSignIn()) {
+                final ProgressDialog progressDialog = new ProgressDialog(getContext());
+                progressDialog.setMessage("Posting...");
+                progressDialog.show();
+                final String postId = Database.Post.generatePostId();
+                Storage.uploadImage(file_image, "posts/"+postId+".jpg",
+                        uri -> uploadPost(postId,lastLocation,uri,progressDialog), e -> {
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+                    Toast.makeText(getContext(), "Failed to upload image\ntry again later", Toast.LENGTH_SHORT).show();
+                });
 
-                }
             }
         });
     }
@@ -191,40 +169,25 @@ public class CameraFragment extends Fragment {
 
         Post post=new Post(postId,imageUri.toString(), Auth.getUserId(),postText.getText().toString(),coordinate, date);
         final Fragment fragment = this;
-        Database.Post.addPost(post, new Consumer<Void>() {
-            @Override
-            public void accept(Void aVoid) {
+        Database.Post.addPost(post,
+                aVoid -> Database.User.attachPostToUser(Auth.getUserId(), post.get_id(),
+                        aVoid1 -> {
+                            progressDialog.dismiss();
+                            Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
 
-                Database.User.attachPostToUser(Auth.getUserId(), post.get_id(), new Consumer<Void>() {
-                    @Override
-                    public void accept(Void aVoid) {
-                        progressDialog.dismiss();
-                        Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                            resetView();
 
-                        resetView();
-
-                        getFragmentManager().beginTransaction()
-                                .detach(fragment)
-                                .attach(fragment)
-                                .commit();
-                    }
-                }, new Consumer<Exception>() {
-                    @Override
-                    public void accept(Exception e) {
-                        progressDialog.dismiss();
-                        e.printStackTrace();
-                    }
+                            requireFragmentManager().beginTransaction()
+                                    .detach(fragment)
+                                    .attach(fragment)
+                                    .commit();
+                        }, e -> {
+                            progressDialog.dismiss();
+                            e.printStackTrace();
+                        }), e -> {
+                    progressDialog.dismiss();
+                    e.printStackTrace();
                 });
-
-
-            }
-        }, new Consumer<Exception>() {
-            @Override
-            public void accept(Exception e) {
-                progressDialog.dismiss();
-                e.printStackTrace();
-            }
-        });
     }
 
     private void resetView() {
@@ -257,33 +220,22 @@ public class CameraFragment extends Fragment {
 
 
     private boolean checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        return false;
+        return ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestPermissions() {
         ActivityCompat.requestPermissions(
-                getActivity(),
+                requireActivity(),
                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
                 PERMISSION_ID
         );
     }
 
     private boolean isLocationEnabled() {
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
+        assert locationManager != null;
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == PERMISSION_ID) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                // Granted. Start getting the location information
-//            }
-//        }
-//    }
 }

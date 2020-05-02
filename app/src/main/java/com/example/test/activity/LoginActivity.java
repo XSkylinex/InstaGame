@@ -1,14 +1,12 @@
-package com.example.test;
+package com.example.test.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.fragment.NavHostFragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.test.R;
 import com.example.test.contollers.Auth;
-import com.example.test.ui.login.LoginFragment;
 
 public class LoginActivity extends AppCompatActivity {
 

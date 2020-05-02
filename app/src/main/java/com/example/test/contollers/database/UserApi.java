@@ -1,16 +1,11 @@
 package com.example.test.contollers.database;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.test.contollers.Auth;
 import com.example.test.models.User;
 import com.example.test.models.listener.Listener;
 import com.example.test.models.listener.ListenerFirebaseAdapter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -35,38 +30,22 @@ public class UserApi {
 
     public void addUser(User user, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         usersCollection.document(user.get_id()).set(user)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            onComplete.accept(null);
-                        }else{
-                            onFailure.accept(task.getException());
-                        }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        onComplete.accept(null);
+                    }else{
+                        onFailure.accept(task.getException());
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+                }).addOnFailureListener(onFailure::accept);
     }
 
     public void getUser(String userId, Consumer<User> onComplete, Consumer<Exception> onFailure){
         usersCollection.document(userId).get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        User user = documentSnapshot.toObject(User.class);
-                        onComplete.accept(user);
-                    }
+                .addOnSuccessListener(documentSnapshot -> {
+                    User user = documentSnapshot.toObject(User.class);
+                    onComplete.accept(user);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+                .addOnFailureListener(onFailure::accept);
     }
 
     public Listener listenUser(String userId, Consumer<User> onComplete, Consumer<Exception> onFailure){
@@ -90,22 +69,14 @@ public class UserApi {
     }
 
     public void getUsers(Consumer<List<User>> onComplete, Consumer<Exception> onFailure){
-        usersCollection.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
-                List<User> users = new ArrayList<>();
-                for (DocumentSnapshot document : documents) {
-                    users.add(document.toObject(User.class));
-                }
-                onComplete.accept(users);
+        usersCollection.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            List<DocumentSnapshot> documents = queryDocumentSnapshots.getDocuments();
+            List<User> users = new ArrayList<>();
+            for (DocumentSnapshot document : documents) {
+                users.add(document.toObject(User.class));
             }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+            onComplete.accept(users);
+        }).addOnFailureListener(onFailure::accept);
 
     }
 
@@ -130,28 +101,25 @@ public class UserApi {
     }
 
     public Listener listenUsersChanges(Consumer<User> onAdded, Consumer<User> onModified, Consumer<User> onRemoved, Consumer<Exception> onFailure){
-        ListenerRegistration listenerRegistration = usersCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    onFailure.accept(e);
-                    return;
-                }
-                assert queryDocumentSnapshots != null;
-                List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
-                for (DocumentChange documentChange : documentChanges) {
-                    User user = documentChange.getDocument().toObject(User.class);
-                    switch (documentChange.getType()) {
-                        case ADDED:
-                            onAdded.accept(user);
-                            break;
-                        case MODIFIED:
-                            onModified.accept(user);
-                            break;
-                        case REMOVED:
-                            onRemoved.accept(user);
-                            break;
-                    }
+        ListenerRegistration listenerRegistration = usersCollection.addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (e != null) {
+                onFailure.accept(e);
+                return;
+            }
+            assert queryDocumentSnapshots != null;
+            List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
+            for (DocumentChange documentChange : documentChanges) {
+                User user = documentChange.getDocument().toObject(User.class);
+                switch (documentChange.getType()) {
+                    case ADDED:
+                        onAdded.accept(user);
+                        break;
+                    case MODIFIED:
+                        onModified.accept(user);
+                        break;
+                    case REMOVED:
+                        onRemoved.accept(user);
+                        break;
                 }
             }
         });
@@ -160,32 +128,12 @@ public class UserApi {
 
     public void deleteUser(String userId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         usersCollection.document(userId).delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        onComplete.accept(null);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+                .addOnSuccessListener(aVoid -> onComplete.accept(null)).addOnFailureListener(onFailure::accept);
     }
 
     public void updateUser(User user, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         usersCollection.document(user.get_id()).set(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                onComplete.accept(null);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+                .addOnSuccessListener(aVoid -> onComplete.accept(null)).addOnFailureListener(onFailure::accept);
 
     }
 
@@ -197,31 +145,11 @@ public class UserApi {
     public void attachPostToUser(String userId, String postId,Consumer<Void> onComplete, Consumer<Exception> onFailure){
         final HashMap<String, Object> map = new HashMap<>();
         map.put(postId,true);
-        usersCollection.document(userId).collection("posts").document(postId).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                onComplete.accept(aVoid);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+        usersCollection.document(userId).collection("posts").document(postId).set(map).addOnSuccessListener(onComplete::accept).addOnFailureListener(onFailure::accept);
     }
 
     public void detachPostToUser(String userId, String postId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
-        usersCollection.document(userId).collection("posts").document(postId).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                onComplete.accept(aVoid);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.accept(e);
-            }
-        });
+        usersCollection.document(userId).collection("posts").document(postId).delete().addOnSuccessListener(onComplete::accept).addOnFailureListener(onFailure::accept);
     }
 
 }

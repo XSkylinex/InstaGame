@@ -5,7 +5,7 @@
     android:id="@+id/camera"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.camera.CameraFragment">
+    tools:context=".fragment.CameraFragment">
 
     <ImageButton
         android:id="@+id/ib_image_post"

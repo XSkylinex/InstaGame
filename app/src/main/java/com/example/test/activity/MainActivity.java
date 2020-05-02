@@ -1,26 +1,15 @@
-package com.example.test;
+package com.example.test.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
-import android.os.Build;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
-
-import com.example.test.ui.camera.CameraFragment;
-import com.example.test.ui.main.MainFragment;
-import com.example.test.ui.search.SearchFragment;
-import com.example.test.ui.userprofile.UserProfileFragment;
+import com.example.test.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,14 +27,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(bottomNavigationView,navController);
 
 
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-          @Override
-          public void onDestinationChanged(@NonNull NavController
-                                                   controller, @NonNull NavDestination destination, @Nullable Bundle
-                                                   arguments) {
-              getSupportActionBar().setTitle(destination.getLabel());
-          }
-        });
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> getSupportActionBar().setTitle(destination.getLabel()));
     }
 
     @Override

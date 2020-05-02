@@ -1,40 +1,32 @@
-package com.example.test.ui.search;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
+package com.example.test.fragment;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.example.test.PostFragment;
-import com.example.test.PostFragmentArgs;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+
 import com.example.test.R;
 import com.example.test.adapter.PostImageAdapter;
 import com.example.test.models.Post;
+import com.example.test.viewmodel.SharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
 
-    private SearchViewModel mViewModel;
+    private SharedViewModel mViewModel;
 
     private PostImageAdapter imageAdapter;
-
-    public static SearchFragment newInstance() {
-        return new SearchFragment();
-    }
 
     @Nullable
     @Override
@@ -45,16 +37,14 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        GridView gridview = (GridView) view.findViewById(R.id.usergridview);
+        GridView gridview = view.findViewById(R.id.usergridview);
         imageAdapter = new PostImageAdapter(getContext(),new ArrayList<>());
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Post post = imageAdapter.getItem(position);
-                final SearchFragmentDirections.ActionSearchFragmentToPostFragment action = SearchFragmentDirections.actionSearchFragmentToPostFragment(post.get_id());
-                Navigation.findNavController(getView()).navigate(action);
+        gridview.setOnItemClickListener((parent, view1, position, id) -> {
+            Post post = imageAdapter.getItem(position);
+            assert post != null;
+            final SearchFragmentDirections.ActionSearchFragmentToPostFragment action = SearchFragmentDirections.actionSearchFragmentToPostFragment(post.get_id());
+            Navigation.findNavController(requireView()).navigate(action);
 
-            }
         });
         gridview.setAdapter(imageAdapter);
         super.onViewCreated(view, savedInstanceState);
@@ -63,7 +53,8 @@ public class SearchFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
         // TODO: Use the ViewModel
 
 
