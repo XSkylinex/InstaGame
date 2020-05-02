@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,12 +24,10 @@ import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Comment;
 import com.example.test.models.User;
-import com.example.test.models.listener.Listener;
+import com.example.test.viewmodel.CommentsUsersChangesSharedViewModel;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 
 public class CommentFragment extends Fragment {
@@ -37,44 +37,7 @@ public class CommentFragment extends Fragment {
 
     private CommentAdapter mAdapter;
 
-    private Map<String,User> userMap; // user id to user
-    private Map<String, CommentFragment.UserListenerCount> stringListenerMap; // user id to user listener
 
-    private Listener postListener=null;
-
-    private static class UserListenerCount {
-        @NonNull
-        public String userid;
-        @NonNull
-        Listener userListener;
-        int count;
-
-        UserListenerCount(@NonNull String userid, @NonNull Listener userListener) {
-            this.userid = userid;
-            this.userListener = userListener;
-            this.count = 0;
-        }
-
-        void addListener(){
-            this.count++;
-        }
-        void removerListener(){
-            this.count--;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            CommentFragment.UserListenerCount that = (CommentFragment.UserListenerCount) o;
-            return userid.equals(that.userid);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(userid);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,8 +53,6 @@ public class CommentFragment extends Fragment {
         et_comment = view.findViewById(R.id.et_comment);
         btn_comment_send = view.findViewById(R.id.btn_comment_send);
 
-        userMap = new HashMap<>();
-        stringListenerMap = new HashMap<>();
 
         rv_comments.setHasFixedSize(false);
 
@@ -117,54 +78,16 @@ public class CommentFragment extends Fragment {
         final String postId = CommentFragmentArgs.fromBundle(requireArguments()).getPostId();
         Log.d("CommentFragment",postId);
 
-        Database.Comment.listenCommentsChangesFromPost(postId, comment -> {
-            //added comment
-            Log.d("CommentFragment","added comment : "+comment.get_id());
+        CommentsUsersChangesSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(CommentsUsersChangesSharedViewModel.class);
 
-            final String commentUserId = comment.get_userId();
-            if (!userMap.containsKey(commentUserId)) {
-                final Listener userListener = Database.User.listenUser(commentUserId, user -> {
-                    userMap.put(commentUserId,user); //get connect between user and post
-                    mAdapter.updateData(comment,user); //display information
-                    final UserListenerCount userListenerCount = stringListenerMap.get(commentUserId); // sync problem
-                    assert userListenerCount != null;
-                    userListenerCount.addListener();
-                    Log.d("CommentFragment","user listener added for "+commentUserId+"\t count: "+ userListenerCount.count);
-                }, e -> {
-                    Log.e("CommentFragment","Error: "+e.getMessage());
-                    e.printStackTrace();
-                });
-                stringListenerMap.put(commentUserId,new UserListenerCount(commentUserId, userListener));
-            }else{
-                mAdapter.updateData(comment,userMap.get(commentUserId)); //display information
-                final UserListenerCount userListenerCount = stringListenerMap.get(commentUserId);
-                assert userListenerCount != null;
-                userListenerCount.addListener();
-                Log.d("CommentFragment","user listener added for "+commentUserId+"\t count: "+ userListenerCount.count);
-            }
+        // TODO: Use the ViewModel
 
-        }, comment -> {
-            // modified comment
-            Log.d("CommentFragment","modified comment : "+comment.get_id());
-            mAdapter.updateData(comment, userMap.get(comment.get_userId()));
-        }, comment -> {
-            // removed comment
-            Log.d("CommentFragment","removed comment : "+comment.get_id());
-            mAdapter.removeData(comment); //delete comment
-            final String commentUserId = comment.get_userId();
-            UserListenerCount userListenerCount = stringListenerMap.get(commentUserId);
-            assert userListenerCount != null;
-            userListenerCount.removerListener();//this post not anymore liston to user
-            Log.d("CommentFragment","user listener removed for "+comment.get_id()+"\t count: "+ userListenerCount.count);
-            if (userListenerCount.count <= 0){ // if no one left listen to this user
-                userListenerCount.userListener.remove(); // remove connection
-                stringListenerMap.remove(commentUserId); //
-                userMap.remove(commentUserId); //
-                Log.d("CommentFragment","user listener removed for "+ commentUserId +"\t removed");
-            }
-        }, e -> {
-            Log.e("CommentFragment","Error: "+e.getMessage());
-            e.printStackTrace();
+
+        final LiveData<Map<Comment, User>> commentsUsers = mViewModel.getCommentsUsers(postId);
+
+        commentsUsers.observe(this.getViewLifecycleOwner(),commentUserMap -> {
+            Log.d("comments",commentUserMap.toString());
+            mAdapter.setData(commentUserMap);
         });
 
         btn_comment_send.setOnClickListener(v -> {
@@ -192,16 +115,5 @@ public class CommentFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         Log.d("CommentFragment","onDestroyView");
-
-        if (this.postListener!=null){
-            this.postListener.remove();
-        }
-        userMap.clear();
-        stringListenerMap.forEach((userId, userListenerCount) -> {
-            Log.d("CommentFragment","clear connection for "+userId+" had "+userListenerCount.count+" connection");
-            userListenerCount.removerListener();
-        });
-        stringListenerMap.clear();
-
     }
 }
