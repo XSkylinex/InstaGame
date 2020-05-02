@@ -17,14 +17,14 @@ import androidx.navigation.Navigation;
 import com.example.test.R;
 import com.example.test.adapter.PostImageAdapter;
 import com.example.test.models.Post;
-import com.example.test.viewmodel.SharedViewModel;
+import com.example.test.viewmodel.PostsSharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchFragment extends Fragment {
 
-    private SharedViewModel mViewModel;
+    private PostsSharedViewModel mViewModel;
 
     private PostImageAdapter imageAdapter;
 
@@ -53,7 +53,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
 
         // TODO: Use the ViewModel
 

@@ -21,7 +21,7 @@ import com.example.test.adapter.PostImageAdapter;
 import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Post;
-import com.example.test.viewmodel.SharedViewModel;
+import com.example.test.viewmodel.PostsSharedViewModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 public class UserProfileFragment extends Fragment {
 
-    private SharedViewModel mViewModel;
+    private PostsSharedViewModel mViewModel;
 
     private PostImageAdapter imageAdapter;
 
@@ -70,7 +70,7 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
         // TODO: Use the ViewModel
 
         final LiveData<List<Post>> posts = mViewModel.getPosts();

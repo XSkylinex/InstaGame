@@ -20,7 +20,7 @@ import com.example.test.adapter.PostAdapter;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Post;
 import com.example.test.models.listener.Listener;
-import com.example.test.viewmodel.SharedViewModel;
+import com.example.test.viewmodel.PostsSharedViewModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -72,7 +72,7 @@ public class PostFragment extends Fragment {
         final String postId = PostFragmentArgs.fromBundle(requireArguments()).getPostId();
         Log.d("PostFragment",postId);
 
-        SharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        PostsSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
 
         final LiveData<List<Post>> posts = mViewModel.getPosts();
 

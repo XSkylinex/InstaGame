@@ -12,7 +12,7 @@ import com.example.test.models.listener.Listener;
 
 import java.util.List;
 
-public class SharedViewModel extends ViewModel {
+public class PostsSharedViewModel extends ViewModel {
 
     private Listener Postslistener = null;
     private MutableLiveData<List<Post>> posts;
