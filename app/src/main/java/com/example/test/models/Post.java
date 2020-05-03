@@ -11,18 +11,25 @@ import java.util.Objects;
 
 public class Post implements Serializable {
 
+    @NonNull
     private String _id;
+    @NonNull
     private String _imageUrl;
+    @NonNull
     private String _userId;
+    @NonNull
     private String _content;
+    @NonNull
     private Coordinate _coordinate;
+    @NonNull
     private Date _date;
 
 
     private Post() {
     }
 
-    public Post(@NonNull final String _id, @NonNull final String _imageUrl, @NonNull final String _userId, @NonNull final  String _content, @Nullable final Coordinate _coordinate, @NonNull final  Date _date) {
+    public Post(@NonNull final String _id, @NonNull final String _imageUrl, @NonNull final String _userId,
+                @NonNull final  String _content, @Nullable final Coordinate _coordinate, @NonNull final Date _date) {
         this._id = _id;
         this._imageUrl = _imageUrl;
         this._userId = _userId;
@@ -88,6 +95,7 @@ public class Post implements Serializable {
         this._date = _date;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -108,7 +116,6 @@ public class Post implements Serializable {
     }
 
 
-    @NotNull
     @Override
     public String toString() {
         return "Post{" +

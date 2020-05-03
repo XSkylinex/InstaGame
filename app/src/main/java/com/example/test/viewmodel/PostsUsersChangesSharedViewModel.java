@@ -3,6 +3,7 @@ package com.example.test.viewmodel;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Consumer;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -12,6 +13,7 @@ import com.example.test.models.Post;
 import com.example.test.models.User;
 import com.example.test.models.listener.Listener;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -23,8 +25,20 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
     private Map<Post, User> entries;
     public LiveData<Map<Post, User>> getPostsUsers() {
         if (postsusers == null) {
+            entries = new HashMap<>();
             postsusers = new MutableLiveData<>();
-            loadPosts();
+            loadPosts(postUserEntry -> {
+                entries.put(postUserEntry.getKey(), postUserEntry.getValue());
+                postsusers.setValue(entries);
+            }, post -> {
+                final User user = entries.get(post);
+                entries.remove(post);
+                entries.put(post,user);
+                postsusers.setValue(entries);
+            }, post -> {
+                entries.remove(post);
+                postsusers.setValue(entries);
+            });
         }
         return postsusers;
     }
@@ -67,19 +81,19 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
         }
     }
 
-    private void loadPosts() {
+    private void loadPosts(Consumer<Map.Entry<Post,User>> onAdded,Consumer<Post> onUpdated,Consumer<Post> onRemoved) {
         // Do an asynchronous operation to fetch users.
         userMap = new HashMap<>();
         stringListenerMap = new HashMap<>();
-        entries = new HashMap<>();
         this.postsListener = Database.Post.listenPostsChanges(post -> {
             // added post
+            // TODO update user (image + username) to all not only thom how listen
             Log.d("PostsUsersChangesSharedViewModel","on post added: "+post.get_id());
             final String postUserId = post.get_userId();
             if (!userMap.containsKey(postUserId)) {
                 final Listener userListener = Database.User.listenUser(postUserId, user -> {
                     userMap.put(postUserId,user); //get connect between user and post
-                    entries.put(post,user); //display information
+                    onAdded.accept(new AbstractMap.SimpleEntry<>(post,user)); //display information
                     postsusers.setValue(entries);
                     final UserListenerCount userListenerCount = stringListenerMap.get(postUserId); // sync problem
                     assert userListenerCount != null;
@@ -91,7 +105,7 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
                 });
                 stringListenerMap.put(postUserId,new UserListenerCount(postUserId, userListener));
             }else{
-                entries.put(post,userMap.get(postUserId)); //display information
+                onAdded.accept(new AbstractMap.SimpleEntry<>(post,userMap.get(postUserId))); //display information
                 postsusers.setValue(entries);
                 final UserListenerCount userListenerCount = stringListenerMap.get(postUserId);
                 assert userListenerCount != null;
@@ -100,13 +114,14 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
             }
         }, post -> {
             // modified post
-            Log.d("PostsUsersChangesSharedViewModel","on post modified: "+post.get_id());
-            entries.put(post, userMap.get(post.get_userId()));
+//            Log.d("PostsUsersChangesSharedViewModel","on post modified: "+post.get_id());
+            Log.d("PostsUsersChangesSharedViewModel","on post modified: "+post.toString());
+            onUpdated.accept(post);
             postsusers.setValue(entries);
         }, post -> { // remove connection from user when deleted post
             // remove post
             Log.d("PostsUsersChangesSharedViewModel","on post removed: "+post.get_id());
-            entries.remove(post);
+            onRemoved.accept(post);
             postsusers.setValue(entries);
             UserListenerCount userListenerCount = stringListenerMap.get(post.get_userId());
             assert userListenerCount != null;
