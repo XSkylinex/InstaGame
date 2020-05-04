@@ -1,22 +1,29 @@
 package com.example.test.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.example.test.R;
+import com.example.test.activity.LoginActivity;
 import com.example.test.adapter.PostImageAdapter;
 import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
@@ -39,6 +46,12 @@ public class UserProfileFragment extends Fragment {
     private TextView tv_userDescription;
     private TextView tv_posts_count;
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
@@ -93,6 +106,44 @@ public class UserProfileFragment extends Fragment {
             Log.e("UserProfileFragment","Error: "+e.getMessage());
             e.printStackTrace();
         });
+    }
+
+
+    @Override
+    public void onDestroy() {
+        setHasOptionsMenu(false);
+        super.onDestroy();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //inflate menu
+        inflater.inflate(R.menu.user_profile_menu, menu);
+        //hide item (sort)
+//        menu.findItem(R.id.action_sort).setVisible(false);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //handle menu item clicks
+        switch (item.getItemId()){
+            case R.id.item_to_user_prifile:{
+                Toast.makeText(getActivity(), "Settings", Toast.LENGTH_SHORT).show();
+                final NavDirections navDirections = UserProfileFragmentDirections.actionUserProfileFragmentToUpdateProfileFragment();
+                Navigation.findNavController(requireView()).navigate(navDirections);
+                break;
+            }
+            case R.id.item_logout:{
+                Auth.signOut();
+                Intent intent =new Intent(getActivity(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                break;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

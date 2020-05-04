@@ -1,15 +1,12 @@
 package com.example.test.viewmodel;
 
 import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Post;
 import com.example.test.models.listener.Listener;
-
 import java.util.List;
 
 public class PostsSharedViewModel extends ViewModel {

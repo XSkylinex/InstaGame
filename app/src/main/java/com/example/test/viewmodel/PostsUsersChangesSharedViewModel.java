@@ -1,18 +1,15 @@
 package com.example.test.viewmodel;
 
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Post;
 import com.example.test.models.User;
 import com.example.test.models.listener.Listener;
-
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;

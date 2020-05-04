@@ -149,7 +149,7 @@ public class CameraFragment extends Fragment {
                 progressDialog.setMessage("Posting...");
                 progressDialog.show();
                 final String postId = Database.Post.generatePostId();
-                Storage.uploadImage(file_image, "posts/"+postId+".jpg",
+                Storage.uploadImage(file_image, postId+".jpg",
                         uri -> uploadPost(postId,lastLocation,uri,progressDialog), e -> {
                     e.printStackTrace();
                     progressDialog.dismiss();

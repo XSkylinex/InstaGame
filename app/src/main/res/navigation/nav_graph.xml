@@ -39,6 +39,9 @@
         <action
             android:id="@+id/action_userProfileFragment_to_postFragment"
             app:destination="@id/postFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_updateProfileFragment"
+            app:destination="@id/updateProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/postFragment"
@@ -78,5 +81,13 @@
         <action
             android:id="@+id/action_otherUserProfileFragment_to_postFragment"
             app:destination="@id/postFragment" />
+        <action
+            android:id="@+id/action_OtherUserProfileFragment_to_updateProfileFragment"
+            app:destination="@id/updateProfileFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/updateProfileFragment"
+        android:name="com.example.test.fragment.UpdateProfileFragment"
+        android:label="fragment_update_profile"
+        tools:layout="@layout/fragment_update_profile" />
 </navigation>

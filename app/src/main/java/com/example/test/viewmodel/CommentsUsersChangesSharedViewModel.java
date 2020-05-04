@@ -6,12 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Comment;
 import com.example.test.models.User;
 import com.example.test.models.listener.Listener;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
