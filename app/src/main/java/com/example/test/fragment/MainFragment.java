@@ -59,7 +59,7 @@ public class MainFragment extends Fragment {
             Navigation.findNavController(requireView()).navigate(action);
         }, post -> {
             Log.d("MainFragment","travel to comment of post :"+post.get_id());
-            final MainFragmentDirections.ActionMainFragmentToCommentFragment action = MainFragmentDirections.actionMainFragmentToCommentFragment(post.get_id());
+            final MainFragmentDirections.ActionMainFragmentToCommentFragment action = MainFragmentDirections.actionMainFragmentToCommentFragment(post);
             Navigation.findNavController(requireView()).navigate(action);
         });
         recyclerView.setAdapter(mAdapter);

@@ -63,12 +63,12 @@
         android:name="com.example.test.fragment.CommentFragment"
         android:label="fragment_comment"
         tools:layout="@layout/fragment_comment" >
-        <argument
-            android:name="postId"
-            app:argType="string" />
         <action
             android:id="@+id/action_commentFragment_to_otherUserProfileFragment"
             app:destination="@id/OtherUserProfileFragment" />
+        <argument
+            android:name="post"
+            app:argType="com.example.test.models.Post" />
     </fragment>
     <fragment
         android:id="@+id/OtherUserProfileFragment"

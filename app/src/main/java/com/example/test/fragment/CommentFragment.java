@@ -23,6 +23,8 @@ import com.example.test.adapter.CommentAdapter;
 import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Comment;
+import com.example.test.models.Notification;
+import com.example.test.models.Post;
 import com.example.test.models.User;
 import com.example.test.viewmodel.CommentsUsersChangesSharedViewModel;
 
@@ -75,15 +77,15 @@ public class CommentFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        final String postId = CommentFragmentArgs.fromBundle(requireArguments()).getPostId();
-        Log.d("CommentFragment",postId);
+        final Post post = CommentFragmentArgs.fromBundle(requireArguments()).getPost();
+        Log.d("CommentFragment",post.get_id());
 
         CommentsUsersChangesSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(CommentsUsersChangesSharedViewModel.class);
 
         // TODO: Use the ViewModel
 
 
-        final LiveData<Map<Comment, User>> commentsUsers = mViewModel.getCommentsUsers(postId);
+        final LiveData<Map<Comment, User>> commentsUsers = mViewModel.getCommentsUsers(post.get_id());
 
         commentsUsers.observe(this.getViewLifecycleOwner(),commentUserMap -> {
             Log.d("comments",commentUserMap.toString());
@@ -102,8 +104,19 @@ public class CommentFragment extends Fragment {
                 return;
             }
             Date date = new Date(System.currentTimeMillis());
-            Comment comment = new Comment(Database.Comment.generateCommentId(),postId, Auth.getUserId(), comment_text, date);
-            Database.Comment.addComment(comment, aVoid -> Toast.makeText(getContext(), "Comment send!", Toast.LENGTH_SHORT).show(),
+            final String userId = Auth.getUserId();
+            Comment comment = new Comment(Database.Comment.generateCommentId(),post.get_id(), userId, comment_text, date);
+            Database.Comment.addComment(comment, aVoid -> {
+                        Notification notification = new Notification(Database.Notification.generateNotificationId(userId),
+                                post.get_userId() ,userId,Notification.Types.comment,post.get_id());
+                        Database.Notification.addNotification
+                                (notification,aVoid1 -> {
+                                    Toast.makeText(getContext(), "Comment send!", Toast.LENGTH_SHORT).show();
+                                }, e -> {
+                            Log.e("CommentFragment","Error: "+e.getMessage());
+                            e.printStackTrace();
+                        });
+                    },
                     e -> {
                 Log.e("CommentFragment","Error: "+e.getMessage());
                 e.printStackTrace();

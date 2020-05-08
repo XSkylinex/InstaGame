@@ -60,7 +60,7 @@ public class PostFragment extends Fragment {
         }, post -> {
             Log.d("PostFragment","travel to comment of post :"+post.get_id());
             // safeArgs
-            final PostFragmentDirections.ActionPostFragmentToCommentFragment action = PostFragmentDirections.actionPostFragmentToCommentFragment(post.get_id());
+            final PostFragmentDirections.ActionPostFragmentToCommentFragment action = PostFragmentDirections.actionPostFragmentToCommentFragment(post);
             Navigation.findNavController(requireView()).navigate(action);
         });
         rv_post.setAdapter(mAdapter);

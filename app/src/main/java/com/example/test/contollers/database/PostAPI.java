@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 public class PostAPI {
 
-    final static private String LIKES = "likes";
+    final static String LIKES = "likes";
 
     PostAPI(){}
 
@@ -237,7 +237,7 @@ public class PostAPI {
     }
 
 
-    public void runTransactionLike(String postId, String userId,Consumer<Void> onComplete, Consumer<Exception> onFailure){
+    public void runTransactionLike(String postId, String userId,Consumer<Integer> onComplete, Consumer<Exception> onFailure){
         final DocumentReference postRef = postsCollection.document(postId);
         final DocumentReference likeUserRef = postsCollection.document(postId).collection(LIKES).document(userId);
         FirebaseFirestore.getInstance().runTransaction(transaction -> {
@@ -247,20 +247,23 @@ public class PostAPI {
                 throw new FirebaseFirestoreException("Post isn't exist",
                         FirebaseFirestoreException.Code.NOT_FOUND);
             }
+            int num = 0;
             if (snapshot_likeUserRef.exists()){
                 likeUserRef.delete();
+                num = -1;
             }else{
                 HashMap<String,Object> hashMap=new HashMap<>();
                 hashMap.put(userId,true);
                 likeUserRef.set(hashMap);
+                num = 1;
             }
 
 
             // Success
-            return null;
-        }).addOnSuccessListener(o -> {
+            return num;
+        }).addOnSuccessListener(num -> {
             Log.d("PostAPI", "Transaction success!");
-            onComplete.accept(null);
+            onComplete.accept(num);
         })
         .addOnFailureListener(e -> {
             Log.w("PostAPI", "Transaction failure.", e);

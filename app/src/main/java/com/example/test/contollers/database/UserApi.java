@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 
 public class UserApi {
 
+    static final String USERS = "users";
     UserApi() {
     }
 

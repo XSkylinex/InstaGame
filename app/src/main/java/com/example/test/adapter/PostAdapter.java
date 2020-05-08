@@ -1,5 +1,6 @@
 package com.example.test.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.test.R;
 import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
+import com.example.test.models.Notification;
 import com.example.test.models.Post;
 import com.example.test.models.User;
 import com.example.test.models.listener.Listener;
@@ -61,6 +63,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             this.context = context;
         }
 
+        @SuppressLint("DefaultLocale")
         void setData(final Post post, final User user, final Consumer<User> travelToUserProfile, final Consumer<Post> travelToPostComment){
             this.useName.setText(user.get_userName());
             this.picDescription.setText(post.get_content());
@@ -75,7 +78,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             ib_like.setClickable(false);
 
             // TODO
-            listenerDraw = Database.Post.listenIsLiked(post.get_id(), Auth.getUserId(),isLiked -> {
+            final String current_userId = Auth.getUserId();
+            listenerDraw = Database.Post.listenIsLiked(post.get_id(), current_userId, isLiked -> {
                 ib_like.setClickable(true);
                 if (isLiked)
                     ib_like.setImageResource(R.drawable.ic_liked);
@@ -89,13 +93,34 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
             // TODO
             listenerCount = Database.Post.listenTotalLikesCount(post.get_id(),
-                    count -> this.likeNumbers.setText("" + count),
+                    count -> this.likeNumbers.setText(String.format("%d", count)),
                     Throwable::printStackTrace);
 
             ib_like.setOnClickListener(v -> {
                 ib_like.setClickable(false);
                 Database.Post.runTransactionLike(post.get_id(),
-                        Auth.getUserId(), aVoid -> ib_like.setClickable(true),
+                        current_userId, add_or_remove -> {
+                            if (add_or_remove<0){
+                                ib_like.setImageResource(R.drawable.ic_like);
+                                Database.Notification.deleteNotifications(post.get_userId(),Notification.Types.like,Auth.getUserId(),post.get_id(),aVoid -> {
+
+                                },e -> {
+
+                                });
+
+                            }else if (0<add_or_remove){
+                                ib_like.setImageResource(R.drawable.ic_liked);
+                                final String notificationId = Database.Notification.generateNotificationId(current_userId);
+                                Notification notification = new Notification(notificationId,post.get_userId(),current_userId,Notification.Types.like,post.get_id());
+                                Database.Notification.addNotification(notification,aVoid -> {
+
+                                },e -> {
+
+                                });
+
+                            }
+                            ib_like.setClickable(true);
+                        },
                         e -> ib_like.setClickable(true));
             });
 
