@@ -19,20 +19,24 @@
             android:text="username"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-        <com.example.test.view.SquareImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/picUserPhotoCell"
             android:layout_width="40dp"
-            android:layout_height="75dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_profile" />
+            app:srcCompat="@drawable/ic_profile"
+            app:civ_border_width="0dp"
+            app:civ_border_color="#FFFFFF"/>
 
     </LinearLayout>
 
     <ImageView
         android:id="@+id/userPic"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/post_photo"
+        android:scaleType="fitXY"
         app:srcCompat="@drawable/ic_photo_black_48dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -91,10 +95,11 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="5dp"
         android:layout_marginEnd="0dp"
         android:layout_marginRight="0dp"
         android:adjustViewBounds="true"
+        android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@android:drawable/divider_horizontal_textfield" />

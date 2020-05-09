@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -32,18 +33,23 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView tv_user_comment;
         private TextView tv_comment_username;
+        private TextView tv_comment_date;
         private ImageView iv_user_image;
         private Context context;
         MyViewHolder(View view, Context context){
             super(view);
             this.tv_user_comment = view.findViewById(R.id.tv_user_comment);
             this.tv_comment_username = view.findViewById(R.id.tv_comment_username);
+            this.tv_comment_date = view.findViewById(R.id.tv_comment_date);
             this.iv_user_image = view.findViewById(R.id.iv_user_image);
             this.context = context;
         }
 
         void setData(final Comment comment, final User user, final Consumer<User> travelToUserProfile){
             this.tv_comment_username.setText(user.get_userName());
+            final Date date = comment.get_date();
+            final String dateTxt = date.getHours()+":"+date.getMinutes()+"\t  "+date.getDate()+"/"+(date.getMonth()+1)+"/"+(date.getYear() + 1900);
+            this.tv_comment_date.setText(dateTxt);
             this.tv_user_comment.setText(comment.get_content());
 
             if (user.get_imageUrl() !=null) {

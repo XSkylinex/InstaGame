@@ -105,7 +105,7 @@ public class CommentFragment extends Fragment {
             }
             Date date = new Date(System.currentTimeMillis());
             final String userId = Auth.getUserId();
-            Comment comment = new Comment(Database.Comment.generateCommentId(),post.get_id(), userId, comment_text, date);
+            Comment comment = new Comment(Database.Comment.generateCommentId(post.get_id()),post.get_id(), userId, comment_text, date);
             Database.Comment.addComment(comment, aVoid -> {
                         Notification notification = new Notification(Database.Notification.generateNotificationId(userId),
                                 post.get_userId() ,userId,Notification.Types.comment,post.get_id());

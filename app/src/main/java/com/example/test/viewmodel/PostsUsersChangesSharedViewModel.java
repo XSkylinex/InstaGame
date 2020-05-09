@@ -14,6 +14,8 @@ import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PostsUsersChangesSharedViewModel extends ViewModel {
 
@@ -89,9 +91,15 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
             final String postUserId = post.get_userId();
             if (!userMap.containsKey(postUserId)) {
                 final Listener userListener = Database.User.listenUser(postUserId, user -> {
+
+                    Set<Map.Entry<String, User>> entries = userMap.entrySet();
+                    entries = entries.stream().filter(stringUserEntry -> stringUserEntry.getValue().equals(user)).collect(Collectors.toSet());
+                    for (Map.Entry<String, User> userEntry : entries) {
+                        userMap.put(userEntry.getKey(),user);
+                    }
                     userMap.put(postUserId,user); //get connect between user and post
                     onAdded.accept(new AbstractMap.SimpleEntry<>(post,user)); //display information
-                    postsusers.setValue(entries);
+                    postsusers.setValue(this.entries);
                     final UserListenerCount userListenerCount = stringListenerMap.get(postUserId); // sync problem
                     assert userListenerCount != null;
                     userListenerCount.addListener();

@@ -80,6 +80,7 @@ public class OtherUserProfileFragment extends Fragment {
         posts.observe(this.getViewLifecycleOwner(),posts1 -> {
             posts1 = posts1.stream().filter(post -> post.get_userId().equals(userId)).collect(Collectors.toList());
             Log.d("posts",posts1.toString());
+            tv_posts_count.setText(posts1.size()+"");
             imageAdapter.addAll(posts1);
         });
 
@@ -89,7 +90,6 @@ public class OtherUserProfileFragment extends Fragment {
                 Picasso.get().load(user.get_imageUrl()).into(iv_user_pic);
             tv_UserFullName.setText(user.get_userName());
             tv_userDescription.setText("WIP");
-            tv_posts_count.setText("0");
         }, e -> {
             Log.e("UserProfileFragment","Error: "+e.getMessage());
             e.printStackTrace();

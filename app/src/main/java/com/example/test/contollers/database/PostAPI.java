@@ -29,11 +29,12 @@ import java.util.function.Consumer;
 public class PostAPI {
 
     final static String LIKES = "likes";
+    final static String POSTS = "posts";
 
     PostAPI(){}
 
     private static CollectionReference postsCollection = FirebaseFirestore.getInstance()
-            .collection("posts");
+            .collection(POSTS);
 
     public String generatePostId(){
         return postsCollection.document().getId();

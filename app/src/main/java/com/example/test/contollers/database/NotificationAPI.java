@@ -24,10 +24,6 @@ public class NotificationAPI {
 
     static final FirebaseFirestore instance = FirebaseFirestore.getInstance();
 
-    public String generateNotificationId(String userId){
-
-        return instance.collection(UserApi.USERS).document(userId).collection(NOTIFICATION).document().getId();
-    }
 
     private static CollectionReference getCollection(String userId){
         return instance.collection(UserApi.USERS).document(userId).collection(NOTIFICATION);
@@ -40,6 +36,10 @@ public class NotificationAPI {
         return getDoc(notification.get_user_id(),notification.get_id());
     }
 
+    public String generateNotificationId(String userId){
+
+        return getCollection(userId).document().getId();
+    }
 
     public void addNotification(Notification notification, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         getDoc(notification).set(notification)

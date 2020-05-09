@@ -1,5 +1,6 @@
 package com.example.test.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,8 +37,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserProfileFragment extends Fragment {
-
-    private PostsSharedViewModel mViewModel;
 
     private PostImageAdapter imageAdapter;
 
@@ -80,18 +79,19 @@ public class UserProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
-        // TODO: Use the ViewModel
-
+        final PostsSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
         final LiveData<List<Post>> posts = mViewModel.getPosts();
-
+        tv_posts_count.setText("0");
         posts.observe(this.getViewLifecycleOwner(),posts1 -> {
             final String userId = Auth.getUserId();
             posts1 = posts1.stream().filter(post -> post.get_userId().equals(userId)).collect(Collectors.toList());
-            Log.d("posts",posts1.toString());
+            final int size = posts1.size();
+            Log.d("posts", size +"\t"+posts1.toString());
+            tv_posts_count.setText(size+"");
             imageAdapter.addAll(posts1);
         });
 
@@ -101,7 +101,6 @@ public class UserProfileFragment extends Fragment {
                 Picasso.get().load(user.get_imageUrl()).into(iv_user_pic);
             tv_UserFullName.setText(user.get_userName());
             tv_userDescription.setText("WIP");
-            tv_posts_count.setText("0");
         }, e -> {
             Log.e("UserProfileFragment","Error: "+e.getMessage());
             e.printStackTrace();
