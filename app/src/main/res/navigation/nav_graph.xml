@@ -100,8 +100,7 @@
         android:id="@+id/postEditFragment"
         android:name="com.example.test.fragment.PostEditFragment"
         tools:layout="@layout/fragment_post_edit">
-        <argument
-            android:name="post"
-            app:argType="com.example.test.models.Post" />
+        <argument android:name="postId"
+            app:argType="string" />
     </fragment>
 </navigation>

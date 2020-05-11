@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -161,6 +162,11 @@ public class PostFragment extends Fragment {
                     item.setCheckable(true);
                 });
 
+                break;
+            }
+            case R.id.item_post_edit:{
+                NavDirections action = PostFragmentDirections.actionPostFragmentToPostEditFragment(postId);
+                Navigation.findNavController(requireView()).navigate(action);
                 break;
             }
         }

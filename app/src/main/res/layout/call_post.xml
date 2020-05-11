@@ -30,7 +30,7 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/userPic"
+        android:id="@+id/img_postPic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
@@ -78,7 +78,7 @@
         <TextView
             android:id="@+id/userPostDiscription"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:text="posts discription"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_toComment"

@@ -58,7 +58,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             this.picDescription = view.findViewById(R.id.userPostDiscription);
             this.useName = view.findViewById(R.id.userNameProfile);
             this.picUser = view.findViewById(R.id.picUserPhotoCell);
-            this.picPost = view.findViewById(R.id.userPic);
+            this.picPost = view.findViewById(R.id.img_postPic);
             this.ib_like = view.findViewById(R.id.ib_like);
             this.btn_toComment = view.findViewById(R.id.btn_toComment);
             this.likeNumbers = view.findViewById(R.id.likeNumbers);

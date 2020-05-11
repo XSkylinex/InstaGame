@@ -54,8 +54,10 @@ public class PostAPI {
     public void getPost(String postId, Consumer<Post> onComplete, Consumer<Exception> onFailure){
         postsCollection.document(postId).get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    Post post = documentSnapshot.toObject(Post.class);
-                    onComplete.accept(post);
+                    if(documentSnapshot.exists()) {
+                        Post post = documentSnapshot.toObject(Post.class);
+                        onComplete.accept(post);
+                    }else onComplete.accept(null);
                 })
                 .addOnFailureListener(onFailure::accept);
     }
