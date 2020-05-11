@@ -1,6 +1,5 @@
 package com.example.test.adapter;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +9,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
-import com.example.test.models.Comment;
 import com.example.test.models.Notification;
 import com.example.test.models.Post;
 import com.example.test.models.User;
@@ -24,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -88,7 +84,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public NotificationAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                                int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.notification_call,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.call_notification,parent,false);
         return new MyViewHolder(v);
     }
 

@@ -17,10 +17,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
@@ -50,6 +50,7 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().show();
         super.onCreate(savedInstanceState);
     }
 
@@ -57,7 +58,7 @@ public class UserProfileFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.user_profile_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_user_profile, container, false);
     }
 
     @Override
@@ -81,10 +82,6 @@ public class UserProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -108,6 +105,7 @@ public class UserProfileFragment extends Fragment {
                 Picasso.get().load(user.get_imageUrl()).into(iv_user_pic);
             tv_UserFullName.setText(user.get_userName());
             tv_userDescription.setText("WIP");
+            ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(user.get_userName());
         }, e -> {
             Log.e("UserProfileFragment","Error: "+e.getMessage());
             e.printStackTrace();
@@ -118,6 +116,7 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onDestroy() {
         setHasOptionsMenu(false);
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
         super.onDestroy();
     }
 

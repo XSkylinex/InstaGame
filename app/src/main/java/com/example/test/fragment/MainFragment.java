@@ -34,14 +34,13 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         Log.d("MainFragment","onCreateView");
-        return inflater.inflate(R.layout.main_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Log.d("MainFragment","onViewCreated");
-
         RecyclerView recyclerView = view.findViewById(R.id.my_recycler_view);
 
         // use this setting to improve performance if you know that changes

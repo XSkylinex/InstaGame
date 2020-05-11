@@ -57,7 +57,7 @@ public class CameraFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.camera_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_camera, container, false);
     }
 
     @Override

@@ -8,8 +8,7 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.test.fragment.MainFragment"
-        android:label="main_fragment"
-        tools:layout="@layout/main_fragment" >
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_commentFragment"
             app:destination="@id/commentFragment" />
@@ -20,13 +19,11 @@
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.example.test.fragment.CameraFragment"
-        android:label="camera_fragment"
-        tools:layout="@layout/camera_fragment" />
+        tools:layout="@layout/fragment_camera" />
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.test.fragment.SearchFragment"
-        android:label="search_fragment"
-        tools:layout="@layout/search_fragment" >
+        tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment_to_postFragment"
             app:destination="@id/postFragment" />
@@ -34,8 +31,7 @@
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.example.test.fragment.UserProfileFragment"
-        android:label="user_profile_fragment"
-        tools:layout="@layout/user_profile_fragment" >
+        tools:layout="@layout/fragment_user_profile">
         <action
             android:id="@+id/action_userProfileFragment_to_postFragment"
             app:destination="@id/postFragment" />
@@ -46,8 +42,7 @@
     <fragment
         android:id="@+id/postFragment"
         android:name="com.example.test.fragment.PostFragment"
-        android:label="fragment_post"
-        tools:layout="@layout/fragment_post" >
+        tools:layout="@layout/fragment_post">
         <argument
             android:name="postId"
             app:argType="string" />
@@ -57,12 +52,14 @@
         <action
             android:id="@+id/action_postFragment_to_otherUserProfileFragment"
             app:destination="@id/OtherUserProfileFragment" />
+        <action
+            android:id="@+id/action_postFragment_to_postEditFragment"
+            app:destination="@id/postEditFragment" />
     </fragment>
     <fragment
         android:id="@+id/commentFragment"
         android:name="com.example.test.fragment.CommentFragment"
-        android:label="fragment_comment"
-        tools:layout="@layout/fragment_comment" >
+        tools:layout="@layout/fragment_comment">
         <action
             android:id="@+id/action_commentFragment_to_otherUserProfileFragment"
             app:destination="@id/OtherUserProfileFragment" />
@@ -73,8 +70,7 @@
     <fragment
         android:id="@+id/OtherUserProfileFragment"
         android:name="com.example.test.fragment.OtherUserProfileFragment"
-        android:label="fragment_other_user_profile"
-        tools:layout="@layout/fragment_other_user_profile" >
+        tools:layout="@layout/fragment_other_user_profile">
         <argument
             android:name="userId"
             app:argType="string" />
@@ -88,18 +84,24 @@
     <fragment
         android:id="@+id/updateProfileFragment"
         android:name="com.example.test.fragment.UpdateProfileFragment"
-        android:label="fragment_update_profile"
         tools:layout="@layout/fragment_update_profile" />
     <fragment
         android:id="@+id/notificationFragment"
         android:name="com.example.test.fragment.NotificationFragment"
-        android:label="fragment_notification"
-        tools:layout="@layout/fragment_notification" >
+        tools:layout="@layout/fragment_notification">
         <action
             android:id="@+id/action_notificationFragment_to_postFragment"
             app:destination="@id/postFragment" />
         <action
             android:id="@+id/action_notificationFragment_to_OtherUserProfileFragment"
             app:destination="@id/OtherUserProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/postEditFragment"
+        android:name="com.example.test.fragment.PostEditFragment"
+        tools:layout="@layout/fragment_post_edit">
+        <argument
+            android:name="post"
+            app:argType="com.example.test.models.Post" />
     </fragment>
 </navigation>

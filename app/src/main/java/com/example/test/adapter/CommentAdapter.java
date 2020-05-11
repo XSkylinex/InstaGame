@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
@@ -73,7 +72,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
     @Override
     public CommentAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                        int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.comment_call,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.call_comment,parent,false);
         return new MyViewHolder(v, this.context);
     }
 
