@@ -277,9 +277,22 @@ public class PostAPI {
             Log.w("PostAPI", "Transaction failure.", e);
             onFailure.accept(e);
         });
-
-
-
+    }
+    public void likePost(String postId, String userId,boolean like,Consumer<Void> onComplete, Consumer<Exception> onFailure){
+        final DocumentReference likeUserRef = postsCollection.document(postId).collection(LIKES).document(userId);
+        if (like){
+            HashMap<String,Object> hashMap=new HashMap<>();
+            hashMap.put(userId,true);
+            likeUserRef.set(hashMap).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) onComplete.accept(task.getResult());
+                else onFailure.accept(task.getException());
+            });
+        }else {
+            likeUserRef.delete().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) onComplete.accept(task.getResult());
+                else onFailure.accept(task.getException());
+            });
+        }
     }
 
     public void isLiked(String postId, String userId,Consumer<Boolean> onComplete, Consumer<Exception> onFailure){

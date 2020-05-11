@@ -43,14 +43,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageButton
+
+        <com.like.LikeButton
             android:id="@+id/ib_like"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginStart="16dp"
-            android:background="@drawable/ic_like"
+            app:icon_size="25dp"
+            app:icon_type="heart"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:like_drawable="@drawable/ic_liked"
+            app:liked="false"
+            app:unlike_drawable="@drawable/ic_like" />
 
         <TextView
             android:id="@+id/likeText"
@@ -78,7 +83,7 @@
             android:text="posts discription"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_toComment"
-            app:layout_constraintStart_toStartOf="@+id/ib_like"
+            app:layout_constraintStart_toEndOf="@+id/ib_like"
             app:layout_constraintTop_toBottomOf="@+id/ib_like" />
 
         <ImageButton

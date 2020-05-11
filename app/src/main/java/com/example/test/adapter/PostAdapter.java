@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.core.util.Consumer;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
@@ -20,6 +21,8 @@ import com.example.test.models.Notification;
 import com.example.test.models.Post;
 import com.example.test.models.User;
 import com.example.test.models.listener.Listener;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.squareup.picasso.Picasso;
 
 import org.jetbrains.annotations.NotNull;
@@ -29,13 +32,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> {
     private List<Map.Entry<Post, User>> mDataset;
     private Consumer<User> travelToUserProfile;
     private Consumer<Post> travelToPostComment;
-    private Context context;
+
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
@@ -45,14 +47,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         private final TextView picDescription;
         private final ImageView picUser;
         private final ImageView picPost;
-        private final AppCompatImageButton ib_like;
+        private final LikeButton ib_like;
         private final AppCompatImageButton btn_toComment;
         private final TextView likeNumbers;
-        private final Context context;
 
         private Listener listenerDraw,listenerCount;
 
-        MyViewHolder(View view, Context context){
+        MyViewHolder(View view){
             super(view);
             this.picDescription = view.findViewById(R.id.userPostDiscription);
             this.useName = view.findViewById(R.id.userNameProfile);
@@ -61,7 +62,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             this.ib_like = view.findViewById(R.id.ib_like);
             this.btn_toComment = view.findViewById(R.id.btn_toComment);
             this.likeNumbers = view.findViewById(R.id.likeNumbers);
-            this.context = context;
         }
 
         @SuppressLint("DefaultLocale")
@@ -76,54 +76,42 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                 this.picUser.setImageResource(R.drawable.ic_profile);
             }
 
-            ib_like.setClickable(false);
 
             final String current_userId = Auth.getUserId();
             listenerDraw = Database.Post.listenIsLiked(post.get_id(), current_userId, isLiked -> {
-                ib_like.setClickable(true);
-                if (isLiked)
-                    ib_like.setImageResource(R.drawable.ic_liked);
-                else
-                    ib_like.setImageResource(R.drawable.ic_like);
+                ib_like.setLiked(isLiked);
             }, e -> {
                 Log.e("PostAdapter.MyViewHolder", "Error: " + e.getMessage());
                 e.printStackTrace();
-                ib_like.setImageResource(R.drawable.ic_like);
             });
 
             listenerCount = Database.Post.listenTotalLikesCount(post.get_id(),
                     count -> this.likeNumbers.setText(String.format("%d", count)),
                     Throwable::printStackTrace);
+            Log.d("MyViewHolder","setData");
+            ib_like.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    Log.d("MyViewHolder","liked");
+                    Database.Post.likePost(post.get_id(), current_userId, true, aVoid -> {
+                        Log.d("MyViewHolder","liked async");
+                        final String notificationId = Database.Notification.generateNotificationId(current_userId);
+                        Notification notification = new Notification(notificationId,post.get_userId(),
+                                current_userId,Notification.Types.like,post.get_id(),new Date(System.currentTimeMillis()));
+                        Database.Notification.addNotification(notification,aVoid1 -> { },e -> { });
+                    }, e -> { });
+                }
 
-            ib_like.setOnClickListener(v -> {
-                ib_like.setClickable(false);
-                Database.Post.runTransactionLike(post.get_id(),
-                        current_userId, add_or_remove -> {
-                            if (add_or_remove<0){
-                                ib_like.setImageResource(R.drawable.ic_like);
-                                Database.Notification.deleteNotifications(post.get_userId(),Notification.Types.like,Auth.getUserId(),post.get_id(),aVoid -> {
-
-                                },e -> {
-
-                                });
-
-                            }else if (0<add_or_remove){
-                                ib_like.setImageResource(R.drawable.ic_liked);
-                                final String notificationId = Database.Notification.generateNotificationId(current_userId);
-                                Notification notification = new Notification(notificationId,post.get_userId(),current_userId,Notification.Types.like,post.get_id(),new Date(System.currentTimeMillis()));
-                                Database.Notification.addNotification(notification,aVoid -> {
-
-                                },e -> {
-
-                                });
-
-                            }
-                            ib_like.setClickable(true);
-                        },
-                        e -> ib_like.setClickable(true));
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    Log.d("MyViewHolder","unLiked");
+                    Database.Post.likePost(post.get_id(), current_userId, false, aVoid -> {
+                        Log.d("MyViewHolder","unLiked async");
+                        Database.Notification.deleteNotifications(post.get_userId(),
+                                Notification.Types.like,Auth.getUserId(),post.get_id(),aVoid1 -> {},e -> { });
+                    }, e -> { });
+                }
             });
-
-
 
             this.useName.setOnClickListener(v -> travelToUserProfile.accept(user));
             this.picUser.setOnClickListener(v -> travelToUserProfile.accept(user));
@@ -144,7 +132,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public PostAdapter(Context context,Consumer<User> travelToUserProfile, Consumer<Post> travelToPostComment) {
-        this.context = context;
         this.mDataset = new ArrayList<>();
         this.travelToUserProfile = travelToUserProfile;
         this.travelToPostComment = travelToPostComment;
@@ -157,7 +144,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                                                        int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_call,parent,false);
-        return new MyViewHolder(v,this.context);
+        return new MyViewHolder(v);
     }
 
     @Override
