@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -111,7 +112,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                             }else if (0<add_or_remove){
                                 ib_like.setImageResource(R.drawable.ic_liked);
                                 final String notificationId = Database.Notification.generateNotificationId(current_userId);
-                                Notification notification = new Notification(notificationId,post.get_userId(),current_userId,Notification.Types.like,post.get_id());
+                                Notification notification = new Notification(notificationId,post.get_userId(),current_userId,Notification.Types.like,post.get_id(),new Date(System.currentTimeMillis()));
                                 Database.Notification.addNotification(notification,aVoid -> {
 
                                 },e -> {

@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
@@ -71,12 +72,18 @@ public class UserProfileFragment extends Fragment {
         gridview.setOnItemClickListener((parent, view1, position, id) -> {
             Post post = imageAdapter.getItem(position);
             assert post != null;
-            final UserProfileFragmentDirections.ActionUserProfileFragmentToPostFragment action = UserProfileFragmentDirections.actionUserProfileFragmentToPostFragment(post.get_id());
+            Log.d("UserProfileFragment","NavDirections: "+post);
+            // bug with NavDirections idk why
+            final NavDirections action = UserProfileFragmentDirections.actionUserProfileFragmentToPostFragment(post.get_id());
             Navigation.findNavController(requireView()).navigate(action);
-
         });
         gridview.setAdapter(imageAdapter);
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @SuppressLint("SetTextI18n")
@@ -88,7 +95,7 @@ public class UserProfileFragment extends Fragment {
         tv_posts_count.setText("0");
         posts.observe(this.getViewLifecycleOwner(),posts1 -> {
             final String userId = Auth.getUserId();
-            posts1 = posts1.stream().filter(post -> post.get_userId().equals(userId)).collect(Collectors.toList());
+            posts1 = posts1.stream().filter(post -> post.get_userId().equals(userId)).sorted((o1, o2) -> o2.get_date().compareTo(o1.get_date())).collect(Collectors.toList());
             final int size = posts1.size();
             Log.d("posts", size +"\t"+posts1.toString());
             tv_posts_count.setText(size+"");

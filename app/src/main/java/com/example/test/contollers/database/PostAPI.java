@@ -146,11 +146,20 @@ public class PostAPI {
     public void deletePost(String postId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         WriteBatch batch = FirebaseFirestore.getInstance().batch();
         batch.delete(postsCollection.document(postId));
+
         postsCollection.document(postId).collection(LIKES).get()
                 .addOnSuccessListener(queryDocumentSnapshots ->{
                     queryDocumentSnapshots.getDocuments().forEach(documentSnapshot ->
                             batch.delete(postsCollection.document(postId).collection(LIKES).document(documentSnapshot.getId())));
-                    batch.commit().addOnSuccessListener(onComplete::accept).addOnFailureListener(onFailure::accept);
+
+                    postsCollection.document(postId).collection(CommentAPI.Comments).get().addOnSuccessListener(queryDocumentSnapshots1 ->{
+                        queryDocumentSnapshots1.getDocuments().forEach(documentSnapshot ->
+                                batch.delete(postsCollection.document(postId).collection(LIKES).document(documentSnapshot.getId())));
+
+                        batch.commit().addOnSuccessListener(onComplete::accept).addOnFailureListener(onFailure::accept);
+
+                    }).addOnFailureListener(onFailure::accept);
+
                 }).addOnFailureListener(onFailure::accept);
     }
 

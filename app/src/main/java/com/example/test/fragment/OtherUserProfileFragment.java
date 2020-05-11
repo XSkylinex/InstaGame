@@ -78,7 +78,7 @@ public class OtherUserProfileFragment extends Fragment {
         final LiveData<List<Post>> posts = mViewModel.getPosts();
 
         posts.observe(this.getViewLifecycleOwner(),posts1 -> {
-            posts1 = posts1.stream().filter(post -> post.get_userId().equals(userId)).collect(Collectors.toList());
+            posts1 = posts1.stream().filter(post -> post.get_userId().equals(userId)).sorted((o1, o2) -> o2.get_date().compareTo(o1.get_date())).collect(Collectors.toList());
             Log.d("posts",posts1.toString());
             tv_posts_count.setText(posts1.size()+"");
             imageAdapter.addAll(posts1);

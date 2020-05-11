@@ -3,14 +3,20 @@ package com.example.test.fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +30,7 @@ import com.example.test.viewmodel.PostsSharedViewModel;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 
 public class PostFragment extends Fragment {
@@ -32,6 +39,13 @@ public class PostFragment extends Fragment {
 
     private Listener userListener = null;
 
+    private String postId;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,7 +83,7 @@ public class PostFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final String postId = PostFragmentArgs.fromBundle(requireArguments()).getPostId();
+        postId = PostFragmentArgs.fromBundle(requireArguments()).getPostId();
         Log.d("PostFragment",postId);
 
         PostsSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
@@ -100,5 +114,50 @@ public class PostFragment extends Fragment {
         super.onDestroyView();
         if (userListener!=null)
             userListener.remove();
+    }
+
+    @Override
+    public void onDestroy() {
+        setHasOptionsMenu(false);
+        super.onDestroy();
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //inflate menu
+        inflater.inflate(R.menu.post_fragment_menu, menu);
+        //hide item (sort)
+//        menu.findItem(R.id.action_sort).setVisible(false);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //handle menu item clicks
+        switch (item.getItemId()){
+            case R.id.item_post_delete:{
+                item.setCheckable(false);
+                Database.Post.deletePost(postId, new Consumer<Void>() {
+                    @Override
+                    public void accept(Void aVoid) {
+                        Toast.makeText(getContext(), "Post Successfully deleted", Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(requireView()).popBackStack();
+                        item.setCheckable(true);
+                    }
+                }, new Consumer<Exception>() {
+                    @Override
+                    public void accept(Exception e) {
+                        Toast.makeText(getContext(), "there was a problem\nplease try again", Toast.LENGTH_SHORT).show();
+                        Navigation.findNavController(requireView()).popBackStack();
+                        item.setCheckable(true);
+                    }
+                });
+
+                break;
+            }
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
