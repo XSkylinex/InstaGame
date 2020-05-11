@@ -9,6 +9,7 @@ import android.widget.GridView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -37,6 +38,8 @@ public class SearchFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
+
         GridView gridview = view.findViewById(R.id.usergridview);
         imageAdapter = new PostImageAdapter(getContext(),new ArrayList<>());
         gridview.setOnItemClickListener((parent, view1, position, id) -> {

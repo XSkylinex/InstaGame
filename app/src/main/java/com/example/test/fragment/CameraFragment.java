@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -62,6 +63,7 @@ public class CameraFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
 
         imagePost = view.findViewById(R.id.ib_image_post);
         postText = view.findViewById(R.id.et_post_text);

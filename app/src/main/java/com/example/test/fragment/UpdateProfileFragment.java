@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
 
@@ -54,6 +55,7 @@ public class UpdateProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
         this._img_profile = view.findViewById(R.id.im_profilePic);
         this._newUserName = view.findViewById(R.id.tv_newUserName);
         this._newPassword = view.findViewById(R.id.tv_input_new_password);

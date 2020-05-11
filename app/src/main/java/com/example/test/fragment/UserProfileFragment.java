@@ -50,7 +50,6 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().show();
         super.onCreate(savedInstanceState);
     }
 
@@ -63,6 +62,7 @@ public class UserProfileFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().show();
         GridView gridview = view.findViewById(R.id.usergridview);
         this.iv_user_pic = view.findViewById(R.id.iv_user_pic);
         this.tv_UserFullName = view.findViewById(R.id.tv_UserFullName);
@@ -87,6 +87,7 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         final PostsSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
         final LiveData<List<Post>> posts = mViewModel.getPosts();
         tv_posts_count.setText("0");
@@ -112,11 +113,14 @@ public class UserProfileFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 
     @Override
     public void onDestroy() {
         setHasOptionsMenu(false);
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
         super.onDestroy();
     }
 

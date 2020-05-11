@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -47,6 +48,8 @@ public class OtherUserProfileFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
+
         GridView gridview = view.findViewById(R.id.usergridview);
         this.iv_user_pic = view.findViewById(R.id.iv_user_pic);
         this.tv_UserFullName = view.findViewById(R.id.tv_UserFullName);

@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
@@ -41,7 +42,7 @@ public class NotificationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
         RecyclerView rv_post = view.findViewById(R.id.rv_notifications_list);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView

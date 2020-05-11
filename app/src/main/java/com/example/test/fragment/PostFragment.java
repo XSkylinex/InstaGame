@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -84,6 +85,7 @@ public class PostFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         postId = PostFragmentArgs.fromBundle(requireArguments()).getPostId();
         Log.d("PostFragment",postId);
 
@@ -95,8 +97,12 @@ public class PostFragment extends Fragment {
             final Optional<Post> postOptional = posts1.stream().filter(post -> post.get_id().equals(postId)).findFirst();
             if (postOptional.isPresent()) {
                 final Post post = postOptional.get();
-                if (post.get_userId().equals(Auth.getUserId()))
+                if (post.get_userId().equals(Auth.getUserId())) {
+                    ((AppCompatActivity) requireActivity()).getSupportActionBar().show();
                     setHasOptionsMenu(true);
+                }else {
+                    ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
+                }
 
                 if (userListener !=null){
                     userListener.remove();
