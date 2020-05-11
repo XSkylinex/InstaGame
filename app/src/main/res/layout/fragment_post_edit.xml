@@ -21,30 +21,31 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_photo_black_48dp"
-        tools:layout_conversion_absoluteHeight="411dp"
-        tools:layout_conversion_absoluteWidth="411dp" />
+        app:srcCompat="@drawable/ic_photo_black_48dp" />
 
-    <EditText
-        android:id="@+id/et_post_text"
-        android:layout_width="0dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/username_text_input_layout"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="Post Description"
-        android:inputType="textMultiLine"
-        android:lines="3"
-        android:maxLines="3"
         app:layout_constraintBottom_toTopOf="@+id/btn_update"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img_postPic"
-        tools:layout_conversion_absoluteHeight="45dp"
-        tools:layout_conversion_absoluteWidth="411dp" />
+        app:layout_constraintTop_toBottomOf="@+id/img_postPic">
+
+        <EditText
+            android:id="@+id/et_post_text"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="Post Description"
+            android:inputType="textMultiLine"
+            android:lines="3"
+            android:maxLines="3"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <Button
         android:id="@+id/btn_update"
@@ -52,9 +53,7 @@
         android:layout_height="wrap_content"
         android:text="@string/common_google_play_services_update_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_conversion_absoluteHeight="48dp"
-        tools:layout_conversion_absoluteWidth="411dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/btn_refresh"
