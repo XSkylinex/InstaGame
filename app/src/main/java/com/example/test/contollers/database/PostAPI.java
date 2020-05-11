@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
 
 import com.example.test.models.Post;
 import com.example.test.models.listener.Listener;
@@ -24,7 +25,6 @@ import com.google.firebase.firestore.WriteBatch;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class PostAPI {
 
@@ -33,7 +33,7 @@ public class PostAPI {
 
     PostAPI(){}
 
-    private static CollectionReference postsCollection = FirebaseFirestore.getInstance()
+    static CollectionReference postsCollection = FirebaseFirestore.getInstance()
             .collection(POSTS);
 
     public String generatePostId(){
@@ -146,7 +146,6 @@ public class PostAPI {
     public void deletePost(String postId, Consumer<Void> onComplete, Consumer<Exception> onFailure){
         WriteBatch batch = FirebaseFirestore.getInstance().batch();
         batch.delete(postsCollection.document(postId));
-
         postsCollection.document(postId).collection(LIKES).get()
                 .addOnSuccessListener(queryDocumentSnapshots ->{
                     queryDocumentSnapshots.getDocuments().forEach(documentSnapshot ->
@@ -155,7 +154,6 @@ public class PostAPI {
                     postsCollection.document(postId).collection(CommentAPI.Comments).get().addOnSuccessListener(queryDocumentSnapshots1 ->{
                         queryDocumentSnapshots1.getDocuments().forEach(documentSnapshot ->
                                 batch.delete(postsCollection.document(postId).collection(LIKES).document(documentSnapshot.getId())));
-
                         batch.commit().addOnSuccessListener(onComplete::accept).addOnFailureListener(onFailure::accept);
 
                     }).addOnFailureListener(onFailure::accept);

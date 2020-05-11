@@ -82,7 +82,6 @@ public class CommentFragment extends Fragment {
 
         CommentsUsersChangesSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(CommentsUsersChangesSharedViewModel.class);
 
-        // TODO: Use the ViewModel
 
 
         final LiveData<Map<Comment, User>> commentsUsers = mViewModel.getCommentsUsers(post.get_id());

@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
@@ -17,6 +18,14 @@ import android.view.ViewGroup;
 
 import com.example.test.R;
 import com.example.test.adapter.NotificationAdapter;
+import com.example.test.contollers.Auth;
+import com.example.test.contollers.database.Database;
+import com.example.test.models.Notification;
+import com.example.test.models.Post;
+import com.example.test.models.User;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class NotificationFragment extends Fragment {
@@ -43,15 +52,15 @@ public class NotificationFragment extends Fragment {
         rv_post.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new NotificationAdapter(getContext(), user -> {
-            Log.d("PostFragment","travel to user profile :"+user.get_id());
-//            final NavDirections action = PostFragmentDirections.actionPostFragmentToOtherUserProfileFragment(user.get_id());
-//            Navigation.findNavController(requireView()).navigate(action);
+        mAdapter = new NotificationAdapter(user -> {
+            Log.d("NotificationFragment","travel to user profile :"+user.get_id());
+            final NavDirections action = NotificationFragmentDirections.actionNotificationFragmentToOtherUserProfileFragment(user.get_id());
+            Navigation.findNavController(requireView()).navigate(action);
         }, post -> {
-            Log.d("PostFragment","travel to comment of post :"+post.get_id());
+            Log.d("NotificationFragment","travel to notification of post :"+post.get_id());
             // safeArgs
-//            final NavDirections action = PostFragmentDirections.actionPostFragmentToCommentFragment(post);
-//            Navigation.findNavController(requireView()).navigate(action);
+            final NavDirections action = NotificationFragmentDirections.actionNotificationFragmentToPostFragment(post.get_id());
+            Navigation.findNavController(requireView()).navigate(action);
         });
         rv_post.setAdapter(mAdapter);
     }
@@ -59,6 +68,32 @@ public class NotificationFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        String userId = Auth.getUserId();
+        Map<Notification,User> notificationUserMap = new HashMap<>();
+        Map<Notification,Post> notificationPostMap = new HashMap<>();
+        Database.Notification.listenNotifications(userId, notification -> {
+            Database.User.getUser(notification.get_creator(), user -> {
+                notificationUserMap.put(notification,user);
+                mAdapter.updateData(notification,notificationPostMap.get(notification),user);
+            }, e -> {
+                e.printStackTrace();
+                Log.e("NotificationFragment",e.getMessage());
+            });
+
+            Database.Post.getPost(notification.get_post_id(), post -> {
+                notificationPostMap.put(notification,post);
+                mAdapter.updateData(notification,post,notificationUserMap.get(notification));
+            }, e -> {
+                e.printStackTrace();
+                Log.e("NotificationFragment",e.getMessage());
+            });
+        }, notification ->
+                mAdapter.updateData(notification,notificationPostMap.get(notification),notificationUserMap.get(notification)),
+                notification -> mAdapter.removeData(notification),
+                e -> {
+            e.printStackTrace();
+            Log.e("NotificationFragment",e.getMessage());
+        });
     }
 
     @Override

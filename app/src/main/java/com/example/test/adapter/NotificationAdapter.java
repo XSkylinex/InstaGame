@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,10 +30,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder> {
-    private List<Map.Entry<Notification, Map.Entry<Post,User>>> mDataset;
+    private List<Map.Entry<Notification, Post>> mDatasetP;
+    private List<Map.Entry<Notification, User>> mDatasetU;
     private Consumer<User> travelToUserProfile;
     private Consumer<Post> travelToPost;
-    private Context context;
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private ImageView iv_notification_user_image;
@@ -44,8 +46,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             this.iv_notification_post_image = view.findViewById(R.id.iv_notification_post_image);
         }
 
-        void setData(final Notification notification,final Post post, final User user, final Consumer<User> travelToUserProfile,Consumer<Post> travelToPost){
-            if (user.get_imageUrl() !=null) {
+        void setData(@NonNull final Notification notification, @Nullable final Post post, @Nullable final User user, final Consumer<User> travelToUserProfile, Consumer<Post> travelToPost){
+            String username="";
+            if (user != null)
+                username = user.get_userName();
+            if (user != null && user.get_imageUrl() !=null) {
                 Picasso.get().load(user.get_imageUrl()).into(this.iv_notification_user_image);
             }else {
                 this.iv_notification_user_image.setImageResource(R.drawable.ic_profile);
@@ -53,27 +58,27 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             String text = "";
             switch (notification.get_type()){
                 case Notification.Types.like:{
-                    text = user.get_userName() +" has like your post";
+                    text = username +" has like your post";
                     break;
                 }
                 case Notification.Types.comment:{
-                    text = user.get_userName() +" has comment your post";
+                    text = username +" has comment your post";
                     break;
                 }
                 default:break;
             }
             tv_notification_text.setText(text);
-
-            Picasso.get().load(post.get_imageUrl()).into(this.iv_notification_post_image);
+            if (post != null)
+                Picasso.get().load(post.get_imageUrl()).into(this.iv_notification_post_image);
 
             this.iv_notification_user_image.setOnClickListener(v -> travelToUserProfile.accept(user));
             this.iv_notification_post_image.setOnClickListener(v -> travelToPost.accept(post));
         }
     }
 
-    public NotificationAdapter(Context context, Consumer<User> travelToUserProfile, Consumer<Post> travelToPost) {
-        this.context = context;
-        this.mDataset = new ArrayList<>();
+    public NotificationAdapter(Consumer<User> travelToUserProfile, Consumer<Post> travelToPost) {
+        this.mDatasetP = new ArrayList<>();
+        this.mDatasetU = new ArrayList<>();
         this.travelToUserProfile = travelToUserProfile;
         this.travelToPost = travelToPost;
 
@@ -89,32 +94,30 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     @Override
     public void onBindViewHolder(NotificationAdapter.MyViewHolder holder, int position) {
-        holder.setData(mDataset.get(position).getKey(),mDataset.get(position).getValue().getKey(),
-                mDataset.get(position).getValue().getValue(),this.travelToUserProfile,this.travelToPost);
+        holder.setData(mDatasetU.get(position).getKey(),mDatasetP.get(position).getValue(),
+                mDatasetU.get(position).getValue(),this.travelToUserProfile,this.travelToPost);
     }
 
     @Override
     public int getItemCount() {
-        Log.d("NotificationAdapter","getItemCount = " + mDataset.size());
-        return mDataset.size();
+        Log.d("NotificationAdapter","getItemCount = " + mDatasetU.size());
+        return mDatasetU.size();
     }
 
-    public void setData(Map<Notification, Map.Entry<Post,User>> notificationEntryMap){
-        this.mDataset.clear();
-        this.mDataset.addAll(notificationEntryMap.entrySet());
-        mDataset.sort((o1, o2) -> o2.getKey().get_date().compareTo(o1.getKey().get_date())); // sort the posts by the newest
-        this.notifyDataSetChanged();
-    }
-
-    public void updateData(Notification notification,Post post,User user){
-        this.mDataset.removeIf(postUserEntry -> postUserEntry.getKey().get_id().equals(notification.get_id()));
-        this.mDataset.add(new AbstractMap.SimpleEntry<>(notification,new AbstractMap.SimpleEntry<>(post,user)));
-        mDataset.sort((o1, o2) -> o2.getKey().get_date().compareTo(o1.getKey().get_date()));
+    public void updateData(@NonNull Notification notification,@Nullable Post post,@Nullable User user){
+        System.out.println(notification+"\t"+post+"\t"+user);
+        this.mDatasetU.removeIf(postUserEntry -> postUserEntry.getKey().get_id().equals(notification.get_id()));
+        this.mDatasetP.removeIf(postUserEntry -> postUserEntry.getKey().get_id().equals(notification.get_id()));
+        this.mDatasetU.add(new AbstractMap.SimpleEntry<>(notification,user));
+        this.mDatasetP.add(new AbstractMap.SimpleEntry<>(notification,post));
+        mDatasetU.sort((o1, o2) -> o2.getKey().get_date().compareTo(o1.getKey().get_date()));
+        mDatasetP.sort((o1, o2) -> o2.getKey().get_date().compareTo(o1.getKey().get_date()));
         this.notifyDataSetChanged();
     }
 
     public void removeData(Notification notification){
-        this.mDataset.removeIf(postUserEntry -> postUserEntry.getKey().get_id().equals(notification.get_id()));
+        this.mDatasetU.removeIf(postUserEntry -> postUserEntry.getKey().get_id().equals(notification.get_id()));
+        this.mDatasetP.removeIf(postUserEntry -> postUserEntry.getKey().get_id().equals(notification.get_id()));
         this.notifyDataSetChanged();
     }
 

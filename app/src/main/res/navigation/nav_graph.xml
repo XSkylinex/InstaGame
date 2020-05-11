@@ -94,5 +94,12 @@
         android:id="@+id/notificationFragment"
         android:name="com.example.test.fragment.NotificationFragment"
         android:label="fragment_notification"
-        tools:layout="@layout/fragment_notification" />
+        tools:layout="@layout/fragment_notification" >
+        <action
+            android:id="@+id/action_notificationFragment_to_postFragment"
+            app:destination="@id/postFragment" />
+        <action
+            android:id="@+id/action_notificationFragment_to_OtherUserProfileFragment"
+            app:destination="@id/OtherUserProfileFragment" />
+    </fragment>
 </navigation>

@@ -78,7 +78,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
             ib_like.setClickable(false);
 
-            // TODO
             final String current_userId = Auth.getUserId();
             listenerDraw = Database.Post.listenIsLiked(post.get_id(), current_userId, isLiked -> {
                 ib_like.setClickable(true);
@@ -92,7 +91,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                 ib_like.setImageResource(R.drawable.ic_like);
             });
 
-            // TODO
             listenerCount = Database.Post.listenTotalLikesCount(post.get_id(),
                     count -> this.likeNumbers.setText(String.format("%d", count)),
                     Throwable::printStackTrace);
@@ -128,6 +126,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
 
             this.useName.setOnClickListener(v -> travelToUserProfile.accept(user));
+            this.picUser.setOnClickListener(v -> travelToUserProfile.accept(user));
             this.btn_toComment.setOnClickListener(v -> travelToPostComment.accept(post));
         }
 
@@ -137,6 +136,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                 listenerDraw.remove();
             if(listenerCount!=null)
                 listenerCount.remove();
+        }
+        public void redraw(){
+            this.picUser.setImageResource(R.drawable.ic_profile);
         }
     }
 
@@ -161,6 +163,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     @Override
     public void onViewRecycled(@NonNull MyViewHolder holder) {
         holder.remove();
+        holder.redraw();
         super.onViewRecycled(holder);
     }
 

@@ -55,8 +55,6 @@ public class SearchFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
 
-        // TODO: Use the ViewModel
-
 
         final LiveData<List<Post>> posts = mViewModel.getPosts();
 

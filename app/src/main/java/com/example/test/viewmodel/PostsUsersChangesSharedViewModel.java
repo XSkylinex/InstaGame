@@ -2,6 +2,7 @@ package com.example.test.viewmodel;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.util.Consumer;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -49,15 +50,16 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
     private static class UserListenerCount {
         @NonNull
         public String userid;
-        @NonNull
+        @Nullable
         Listener userListener;
         int count;
 
-        UserListenerCount(@NonNull String userid, @NonNull Listener userListener) {
+        UserListenerCount(@NonNull String userid, @Nullable Listener userListener) {
             this.userid = userid;
             this.userListener = userListener;
             this.count = 0;
         }
+
 
         void addListener(){
             this.count++;
@@ -86,29 +88,28 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
         stringListenerMap = new HashMap<>();
         this.postsListener = Database.Post.listenPostsChanges(post -> {
             // added post
-            // TODO update user (image + username) to all not only thom how listen
             Log.d("PostsUsersChangesSharedViewModel","on post added: "+post.get_id());
             final String postUserId = post.get_userId();
             if (!userMap.containsKey(postUserId)) {
-                final Listener userListener = Database.User.listenUser(postUserId, user -> {
 
-                    Set<Map.Entry<String, User>> entries = userMap.entrySet();
-                    entries = entries.stream().filter(stringUserEntry -> stringUserEntry.getValue().equals(user)).collect(Collectors.toSet());
-                    for (Map.Entry<String, User> userEntry : entries) {
+                final UserListenerCount userListenerCount = new UserListenerCount(postUserId, null);
+                stringListenerMap.put(postUserId,userListenerCount);
+                userListenerCount.userListener = Database.User.listenUser(postUserId, user -> {
+
+                    Set<Map.Entry<String, User>> entries1 = userMap.entrySet();
+                    entries1 = entries1.stream().filter(stringUserEntry -> stringUserEntry.getValue().equals(user)).collect(Collectors.toSet());
+                    for (Map.Entry<String, User> userEntry : entries1) {
                         userMap.put(userEntry.getKey(),user);
                     }
                     userMap.put(postUserId,user); //get connect between user and post
                     onAdded.accept(new AbstractMap.SimpleEntry<>(post,user)); //display information
                     postsusers.setValue(this.entries);
-                    final UserListenerCount userListenerCount = stringListenerMap.get(postUserId); // sync problem
-                    assert userListenerCount != null;
                     userListenerCount.addListener();
                     Log.d("PostsUsersChangesSharedViewModel","user listener added for "+postUserId+"\t count: "+ userListenerCount.count);
                 }, e -> {
                     Log.e("PostsUsersChangesSharedViewModel","Error: "+e.getMessage());
                     e.printStackTrace();
                 });
-                stringListenerMap.put(postUserId,new UserListenerCount(postUserId, userListener));
             }else{
                 onAdded.accept(new AbstractMap.SimpleEntry<>(post,userMap.get(postUserId))); //display information
                 postsusers.setValue(entries);

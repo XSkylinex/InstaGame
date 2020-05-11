@@ -69,11 +69,8 @@ public class OtherUserProfileFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        // TODO: Use the ViewModel
         final String userId = OtherUserProfileFragmentArgs.fromBundle(requireArguments()).getUserId();
-
         PostsSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
-        // TODO: Use the ViewModel
 
         final LiveData<List<Post>> posts = mViewModel.getPosts();
 

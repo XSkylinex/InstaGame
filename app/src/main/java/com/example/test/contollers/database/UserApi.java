@@ -1,6 +1,7 @@
 package com.example.test.contollers.database;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
 
 import com.example.test.contollers.Auth;
 import com.example.test.models.User;
@@ -18,7 +19,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class UserApi {
 
@@ -26,7 +26,7 @@ public class UserApi {
     UserApi() {
     }
 
-    private static CollectionReference usersCollection = FirebaseFirestore.getInstance()
+    static CollectionReference usersCollection = FirebaseFirestore.getInstance()
             .collection("users");
 
     public void addUser(User user, Consumer<Void> onComplete, Consumer<Exception> onFailure){

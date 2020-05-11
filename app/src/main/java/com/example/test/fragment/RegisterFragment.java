@@ -45,6 +45,7 @@ public class RegisterFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         btnSignUp.setOnClickListener(v -> {
+            btnSignUp.setClickable(false);
             String username = et_username.getText()+"";
             String email = et_email.getText()+"";
             String password = et_password.getText()+"";
@@ -53,12 +54,18 @@ public class RegisterFragment extends Fragment {
                 User user = new User(userId,email,username,null);
                 Database.User.addUser(user, aVoid -> {
                     Toast.makeText(getContext(), "Welcome "+username+"!", Toast.LENGTH_SHORT).show();
-
+                    btnSignUp.setClickable(true);
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
-                }, e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
-            }, e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+                }, e -> {
+                    btnSignUp.setClickable(true);
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            }, e -> {
+                btnSignUp.setClickable(true);
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
         });
     }
 

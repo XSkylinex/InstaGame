@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
 import com.example.test.adapter.PostAdapter;
+import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Post;
 import com.example.test.models.listener.Listener;
@@ -30,7 +32,6 @@ import com.example.test.viewmodel.PostsSharedViewModel;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 
 public class PostFragment extends Fragment {
@@ -43,7 +44,7 @@ public class PostFragment extends Fragment {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
+
         super.onCreate(savedInstanceState);
     }
 
@@ -94,6 +95,9 @@ public class PostFragment extends Fragment {
             final Optional<Post> postOptional = posts1.stream().filter(post -> post.get_id().equals(postId)).findFirst();
             if (postOptional.isPresent()) {
                 final Post post = postOptional.get();
+                if (post.get_userId().equals(Auth.getUserId()))
+                    setHasOptionsMenu(true);
+
                 if (userListener !=null){
                     userListener.remove();
                 }
@@ -138,20 +142,17 @@ public class PostFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.item_post_delete:{
                 item.setCheckable(false);
-                Database.Post.deletePost(postId, new Consumer<Void>() {
-                    @Override
-                    public void accept(Void aVoid) {
-                        Toast.makeText(getContext(), "Post Successfully deleted", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(requireView()).popBackStack();
-                        item.setCheckable(true);
-                    }
-                }, new Consumer<Exception>() {
-                    @Override
-                    public void accept(Exception e) {
-                        Toast.makeText(getContext(), "there was a problem\nplease try again", Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(requireView()).popBackStack();
-                        item.setCheckable(true);
-                    }
+                Database.Post.deletePost(postId, aVoid -> {
+                    Database.User.detachPostToUser(Auth.getUserId(), postId, aVoid1 -> {
+                        Database.Notification.deleteNotifications(Auth.getUserId(), postId, aVoid2 -> {}, e -> {});
+                    }, e -> { });
+                    Toast.makeText(getContext(), "Post Successfully deleted", Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(requireView()).popBackStack();
+                    item.setCheckable(true);
+                }, e -> {
+                    Toast.makeText(getContext(), "there was a problem\nplease try again", Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(requireView()).popBackStack();
+                    item.setCheckable(true);
                 });
 
                 break;

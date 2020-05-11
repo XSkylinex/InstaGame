@@ -48,19 +48,22 @@ public class LoginFragment extends Fragment {
         btnToRegister.setOnClickListener(v -> Navigation.findNavController(requireView()).navigate(R.id.action_loginFragment_to_registerFragment));
 
         btnSignIn.setOnClickListener(v -> {
+            btnSignIn.setClickable(false);
             String email = et_email.getText()+"";
             String password = et_password.getText()+"";
 
             Auth.SignIn(email, password, userId -> Database.User.getUser(userId, user -> {
                 Toast.makeText(getContext(), "Welcome back "+user.get_userName()+"!", Toast.LENGTH_SHORT).show();
-
+                btnSignIn.setClickable(true);
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
-            }, e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show()), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
+            }, e -> {
+                btnSignIn.setClickable(true);
+                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }), e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show());
         });
 
-        // TODO: Use the ViewModel
     }
 
 

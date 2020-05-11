@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
 
 import com.example.test.R;
@@ -26,7 +27,6 @@ import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
-import java.util.function.Consumer;
 
 
 public class UpdateProfileFragment extends Fragment {

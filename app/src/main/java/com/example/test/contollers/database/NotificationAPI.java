@@ -8,6 +8,7 @@ import com.example.test.models.Notification;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -15,6 +16,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationAPI {
@@ -50,6 +52,49 @@ public class NotificationAPI {
                         onFailure.accept(task.getException());
                     }
                 }).addOnFailureListener(onFailure::accept);
+    }
+
+    public void getNotifications(String userId,Consumer<List<Notification>> onComplete, Consumer<Exception> onFailure){
+        getCollection(userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                final List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                ArrayList<Notification> notifications=new ArrayList<>();
+                for (DocumentSnapshot document : documents) {
+                    notifications.add(document.toObject(Notification.class));
+                }
+                onComplete.accept(notifications);
+            }else {
+                onFailure.accept(task.getException());
+            }
+        });
+    }
+    public void listenNotifications(String userId,Consumer<Notification> onAdded, Consumer<Notification> onModified,
+                                    Consumer<Notification> onRemoved, Consumer<Exception> onFailure){
+        getCollection(userId).addSnapshotListener((queryDocumentSnapshots, e) -> {
+            if (e != null){
+                onFailure.accept(e);
+                return;
+            }else {
+                final List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
+                for (DocumentChange documentChange : documentChanges) {
+                    final Notification notification = documentChange.getDocument().toObject(Notification.class);
+                    switch (documentChange.getType()){
+                        case ADDED:{
+                            onAdded.accept(notification);
+                            break;
+                        }
+                        case MODIFIED:{
+                            onModified.accept(notification);
+                            break;
+                        }
+                        case REMOVED:{
+                            onRemoved.accept(notification);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
     }
 
     public void getNotification(String userId, String notificationId, Consumer<Notification> onComplete, Consumer<Exception> onFailure){
@@ -90,6 +135,33 @@ public class NotificationAPI {
                 }else {
                     onFailure.accept(task.getException());
                 }
+            }
+        });
+    }
+    public void deleteNotifications(@NonNull String userId,@NonNull String post_id, Consumer<Void> onComplete, Consumer<Exception> onFailure){
+        Query query = getCollection(userId).whereEqualTo("_post_id",post_id);
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                final QuerySnapshot result = task.getResult();
+                assert result != null;
+                final List<DocumentSnapshot> documents = result.getDocuments();
+                // Get a new write batch
+                WriteBatch batch = FirebaseFirestore.getInstance().batch();
+                for (DocumentSnapshot document : documents) {
+                    batch.delete(getDoc(userId,document.getId()));
+                }
+                batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()){
+                            onComplete.accept(task.getResult());
+                        }else {
+                            onFailure.accept(task.getException());
+                        }
+                    }
+                });
+            }else {
+                onFailure.accept(task.getException());
             }
         });
     }
