@@ -52,9 +52,9 @@
             app:icon_type="heart"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:like_drawable="@drawable/ic_liked"
+            app:like_drawable="@drawable/ic_favorite_black_24dp"
             app:liked="false"
-            app:unlike_drawable="@drawable/ic_like" />
+            app:unlike_drawable="@drawable/ic_favorite_border_black_24dp" />
 
         <TextView
             android:id="@+id/likeText"
@@ -92,7 +92,7 @@
             android:background="#00FFFFFF"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/userPostDiscription"
-            app:srcCompat="@drawable/ic_comment" />
+            app:srcCompat="@drawable/ic_chat_bubble_outline_black_24dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

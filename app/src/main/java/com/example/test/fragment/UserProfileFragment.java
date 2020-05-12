@@ -106,7 +106,8 @@ public class UserProfileFragment extends Fragment {
                 Picasso.get().load(user.get_imageUrl()).into(iv_user_pic);
             tv_UserFullName.setText(user.get_userName());
             tv_userDescription.setText("WIP");
-            ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(user.get_userName());
+            if(getActivity()!=null)
+                ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(user.get_userName());
         }, e -> {
             Log.e("UserProfileFragment","Error: "+e.getMessage());
             e.printStackTrace();
