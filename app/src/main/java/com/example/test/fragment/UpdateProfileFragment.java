@@ -74,7 +74,7 @@ public class UpdateProfileFragment extends Fragment {
             if(user.get_imageUrl() != null){
                 Picasso.get().load(user.get_imageUrl()).into(_img_profile);
             }else{
-                _img_profile.setImageResource(R.drawable.ic_profile);
+                _img_profile.setImageResource(R.drawable.ic_person_black_24dp);
             }
 
             _newUserName.setText(user.get_userName());
@@ -84,7 +84,7 @@ public class UpdateProfileFragment extends Fragment {
                     if(user.get_imageUrl() != null){
                         Picasso.get().load(user.get_imageUrl()).into(_img_profile);
                     }else{
-                        _img_profile.setImageResource(R.drawable.ic_profile);
+                        _img_profile.setImageResource(R.drawable.ic_person_black_24dp);
                     }
                     _newUserName.setText(user.get_userName());
                     _oldPassword.setText("");

@@ -49,7 +49,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             if (user != null && user.get_imageUrl() !=null) {
                 Picasso.get().load(user.get_imageUrl()).into(this.iv_notification_user_image);
             }else {
-                this.iv_notification_user_image.setImageResource(R.drawable.ic_profile);
+                this.iv_notification_user_image.setImageResource(R.drawable.ic_person_black_24dp);
             }
             String text = "";
             switch (notification.get_type()){

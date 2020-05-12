@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.test.R;
 import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
+import com.example.test.models.Coordinate;
 import com.example.test.models.Notification;
 import com.example.test.models.Post;
 import com.example.test.models.User;
@@ -37,6 +38,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     private List<Map.Entry<Post, User>> mDataset;
     private Consumer<User> travelToUserProfile;
     private Consumer<Post> travelToPostComment;
+    private Consumer<Coordinate> travelToMap;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -50,6 +52,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         private final LikeButton ib_like;
         private final AppCompatImageButton btn_toComment;
         private final TextView likeNumbers;
+        private final ImageView iv_post_map;
 
         private Listener listenerDraw,listenerCount;
 
@@ -62,18 +65,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             this.ib_like = view.findViewById(R.id.ib_like);
             this.btn_toComment = view.findViewById(R.id.btn_toComment);
             this.likeNumbers = view.findViewById(R.id.likeNumbers);
+            this.iv_post_map = view.findViewById(R.id.iv_post_map);
         }
 
         @SuppressLint("DefaultLocale")
-        void setData(final Post post, final User user, final Consumer<User> travelToUserProfile, final Consumer<Post> travelToPostComment){
+        void setData(final Post post, final User user, final Consumer<User> travelToUserProfile, final Consumer<Post> travelToPostComment, final Consumer<Coordinate> travelToMap){
             this.useName.setText(user.get_userName());
             this.picDescription.setText(post.get_content());
+
+            if (post.get_coordinate()!=null){
+                this.iv_post_map.setClickable(true);
+                this.iv_post_map.setVisibility(View.VISIBLE);
+            }else {
+                this.iv_post_map.setClickable(false);
+                this.iv_post_map.setVisibility(View.INVISIBLE);
+            }
 
             Picasso.get().load(post.get_imageUrl()).into(this.picPost);
             if (user.get_imageUrl() !=null) {
                 Picasso.get().load(user.get_imageUrl()).into(this.picUser);
             }else {
-                this.picUser.setImageResource(R.drawable.ic_profile);
+                this.picUser.setImageResource(R.drawable.ic_person_black_24dp);
             }
 
 
@@ -116,6 +128,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             this.useName.setOnClickListener(v -> travelToUserProfile.accept(user));
             this.picUser.setOnClickListener(v -> travelToUserProfile.accept(user));
             this.btn_toComment.setOnClickListener(v -> travelToPostComment.accept(post));
+            this.iv_post_map.setOnClickListener(v -> travelToMap.accept(post.get_coordinate()));
         }
 
 
@@ -126,15 +139,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
                 listenerCount.remove();
         }
         public void redraw(){
-            this.picUser.setImageResource(R.drawable.ic_profile);
+            this.picUser.setImageResource(R.drawable.ic_person_black_24dp);
+            this.iv_post_map.setClickable(false);
+            this.iv_post_map.setVisibility(View.INVISIBLE);
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public PostAdapter(Context context,Consumer<User> travelToUserProfile, Consumer<Post> travelToPostComment) {
+    public PostAdapter(Consumer<User> travelToUserProfile, Consumer<Post> travelToPostComment, Consumer<Coordinate> travelToMap) {
         this.mDataset = new ArrayList<>();
         this.travelToUserProfile = travelToUserProfile;
         this.travelToPostComment = travelToPostComment;
+        this.travelToMap = travelToMap;
     }
 
     // Create new views (invoked by the layout manager)
@@ -159,7 +175,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     public void onBindViewHolder(MyViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.setData(mDataset.get(position).getKey(),mDataset.get(position).getValue(),this.travelToUserProfile,this.travelToPostComment);
+        holder.setData(mDataset.get(position).getKey(),mDataset.get(position).getValue(),this.travelToUserProfile,this.travelToPostComment,this.travelToMap);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

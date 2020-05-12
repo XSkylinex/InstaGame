@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,13 +56,18 @@ public class MainFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new PostAdapter(getContext(), user -> {
+        mAdapter = new PostAdapter(user -> {
             Log.d("MainFragment","travel to user profile :"+user.get_id());
-            final MainFragmentDirections.ActionMainFragmentToOtherUserProfileFragment action = MainFragmentDirections.actionMainFragmentToOtherUserProfileFragment(user.get_id());
+            final NavDirections action = MainFragmentDirections.actionMainFragmentToOtherUserProfileFragment(user.get_id());
             Navigation.findNavController(requireView()).navigate(action);
         }, post -> {
             Log.d("MainFragment","travel to comment of post :"+post.get_id());
-            final MainFragmentDirections.ActionMainFragmentToCommentFragment action = MainFragmentDirections.actionMainFragmentToCommentFragment(post);
+            final NavDirections action = MainFragmentDirections.actionMainFragmentToCommentFragment(post);
+            Navigation.findNavController(requireView()).navigate(action);
+        },coordinate -> {
+            Log.d("PostFragment","travel to map of post");
+            // safeArgs
+            final NavDirections action = MainFragmentDirections.actionMainFragmentToMapFragment(coordinate);
             Navigation.findNavController(requireView()).navigate(action);
         });
         recyclerView.setAdapter(mAdapter);

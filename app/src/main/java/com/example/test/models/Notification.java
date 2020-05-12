@@ -3,10 +3,11 @@ package com.example.test.models;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class Notification {
+public class Notification implements Serializable {
 
 
     public static class Types{

@@ -58,7 +58,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
             if (user.get_imageUrl() !=null) {
                 Picasso.get().load(user.get_imageUrl()).into(this.iv_user_image);
             }else {
-                this.iv_user_image.setImageResource(R.drawable.ic_profile);
+                this.iv_user_image.setImageResource(R.drawable.ic_person_black_24dp);
             }
 
             this.tv_comment_username.setOnClickListener(v -> travelToUserProfile.accept(user));

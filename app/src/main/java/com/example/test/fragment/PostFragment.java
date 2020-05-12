@@ -70,14 +70,19 @@ public class PostFragment extends Fragment {
         rv_post.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new PostAdapter(getContext(), user -> {
+        mAdapter = new PostAdapter(user -> {
             Log.d("PostFragment","travel to user profile :"+user.get_id());
-            final PostFragmentDirections.ActionPostFragmentToOtherUserProfileFragment action = PostFragmentDirections.actionPostFragmentToOtherUserProfileFragment(user.get_id());
+            final NavDirections action = PostFragmentDirections.actionPostFragmentToOtherUserProfileFragment(user.get_id());
             Navigation.findNavController(requireView()).navigate(action);
         }, post -> {
             Log.d("PostFragment","travel to comment of post :"+post.get_id());
             // safeArgs
-            final PostFragmentDirections.ActionPostFragmentToCommentFragment action = PostFragmentDirections.actionPostFragmentToCommentFragment(post);
+            final NavDirections action = PostFragmentDirections.actionPostFragmentToCommentFragment(post);
+            Navigation.findNavController(requireView()).navigate(action);
+        },coordinate -> {
+            Log.d("PostFragment","travel to map of post");
+            // safeArgs
+            final NavDirections action = PostFragmentDirections.actionPostFragmentToMapFragment(coordinate);
             Navigation.findNavController(requireView()).navigate(action);
         });
         rv_post.setAdapter(mAdapter);

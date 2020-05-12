@@ -46,7 +46,7 @@
                 android:id="@+id/im_profilePic"
                 android:layout_width="222dp"
                 android:layout_height="100dp"
-                app:srcCompat="@drawable/ic_profile" />
+                app:srcCompat="@drawable/ic_person_black_24dp" />
         </TableRow>
 
         <TableRow

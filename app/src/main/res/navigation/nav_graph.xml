@@ -15,6 +15,9 @@
         <action
             android:id="@+id/action_mainFragment_to_otherUserProfileFragment"
             app:destination="@id/OtherUserProfileFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"
@@ -55,6 +58,9 @@
         <action
             android:id="@+id/action_postFragment_to_postEditFragment"
             app:destination="@id/postEditFragment" />
+        <action
+            android:id="@+id/action_postFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/commentFragment"
@@ -102,5 +108,14 @@
         tools:layout="@layout/fragment_post_edit">
         <argument android:name="postId"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.test.fragment.MapFragment"
+        android:label="fragment_map"
+        tools:layout="@layout/fragment_map" >
+        <argument
+            android:name="coordinate"
+            app:argType="com.example.test.models.Coordinate" />
     </fragment>
 </navigation>
