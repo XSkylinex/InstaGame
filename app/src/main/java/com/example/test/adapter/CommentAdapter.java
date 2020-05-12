@@ -1,6 +1,5 @@
 package com.example.test.adapter;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,21 +26,26 @@ import java.util.function.Consumer;
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHolder> {
     private List<Map.Entry<Comment, User>> mDataset;
     private Consumer<User> travelToUserProfile;
-    private Context context;
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    public interface onClickListner {
+        void onItemClick(int position, View v);
+        void onItemLongClick(int position, View v);
+    }
+    private onClickListner onclicklistner;
+
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private TextView tv_user_comment;
         private TextView tv_comment_username;
         private TextView tv_comment_date;
         private ImageView iv_user_image;
-        private Context context;
-        MyViewHolder(View view, Context context){
+        MyViewHolder(View view){
             super(view);
+            view.setOnClickListener(this);
+            view.setOnLongClickListener(this);
             this.tv_user_comment = view.findViewById(R.id.tv_user_comment);
             this.tv_comment_username = view.findViewById(R.id.tv_comment_username);
             this.tv_comment_date = view.findViewById(R.id.tv_comment_date);
             this.iv_user_image = view.findViewById(R.id.iv_user_image);
-            this.context = context;
         }
 
         void setData(final Comment comment, final User user, final Consumer<User> travelToUserProfile){
@@ -60,10 +64,22 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
             this.tv_comment_username.setOnClickListener(v -> travelToUserProfile.accept(user));
             this.iv_user_image.setOnClickListener(v -> travelToUserProfile.accept(user));
         }
+
+        @Override
+        public void onClick(View v) {
+            if (onclicklistner !=null)
+                onclicklistner.onItemClick(getAdapterPosition(), v);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (onclicklistner !=null)
+                onclicklistner.onItemLongClick(getAdapterPosition(), v);
+            return true;
+        }
     }
 
-    public CommentAdapter(Context context,Consumer<User> travelToUserProfile) {
-        this.context = context;
+    public CommentAdapter(Consumer<User> travelToUserProfile) {
         this.mDataset = new ArrayList<>();
         this.travelToUserProfile = travelToUserProfile;
     }
@@ -73,7 +89,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
     public CommentAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                        int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.call_comment,parent,false);
-        return new MyViewHolder(v, this.context);
+        return new MyViewHolder(v);
     }
 
     @Override
@@ -105,5 +121,11 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
         this.mDataset.removeIf(postUserEntry -> postUserEntry.getKey().get_id().equals(comment.get_id()));
         this.notifyDataSetChanged();
     }
+    public void setOnItemClickListener(onClickListner onclicklistner) {
+        this.onclicklistner = onclicklistner;
+    }
 
+    public Map.Entry<Comment, User> getDataAt(int position) {
+        return mDataset.get(position);
+    }
 }

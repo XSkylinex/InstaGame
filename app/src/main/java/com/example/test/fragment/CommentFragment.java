@@ -1,5 +1,6 @@
 package com.example.test.fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,9 +29,11 @@ import com.example.test.models.Notification;
 import com.example.test.models.Post;
 import com.example.test.models.User;
 import com.example.test.viewmodel.CommentsUsersChangesSharedViewModel;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.function.Consumer;
 
 
 public class CommentFragment extends Fragment {
@@ -40,7 +43,7 @@ public class CommentFragment extends Fragment {
 
     private CommentAdapter mAdapter;
 
-
+    private Post post;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,21 +68,67 @@ public class CommentFragment extends Fragment {
         rv_comments.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new CommentAdapter(getContext(), user -> {
+        mAdapter = new CommentAdapter(user -> {
             Log.d("PostFragment","travel to user profile :"+user.get_id());
             final CommentFragmentDirections.ActionCommentFragmentToOtherUserProfileFragment action =
                     CommentFragmentDirections.actionCommentFragmentToOtherUserProfileFragment(user.get_id());
             Navigation.findNavController(requireView()).navigate(action);
         });
-        rv_comments.setAdapter(mAdapter);
 
+        mAdapter.setOnItemClickListener(new CommentAdapter.onClickListner() {
+            @Override
+            public void onItemClick(int position, View v) {
+//                final Map.Entry<Comment, User> dataAt = mAdapter.getDataAt(position);
+//                final Comment comment = dataAt.getKey();
+//                final User user = dataAt.getValue();
+//                Log.d("onItemClickListener","onItemClick:"+dataAt.getKey().toString()+"\t"+dataAt.getValue().toString());
+//                if (!user.get_id().equals(Auth.getUserId()))
+//                    return;
+            }
+
+            @Override
+            public void onItemLongClick(int position, View v) {
+                final Map.Entry<Comment, User> dataAt = mAdapter.getDataAt(position);
+                final Comment comment = dataAt.getKey();
+                final User user = dataAt.getValue();
+                Log.d("onItemClickListener","onItemLongClick:"+ comment.toString()+"\t"+ user.toString());
+                if (!user.get_id().equals(Auth.getUserId()))
+                    return;
+                if (getContext()==null)
+                    return;
+                new MaterialAlertDialogBuilder(getContext())
+                        .setTitle("Delete Comment?")
+                        .setMessage("Are you sure you want to delete this comment?")
+                        .setNegativeButton("Cancel",(dialog, which) -> dialog.cancel())
+                        .setPositiveButton("Delete", (dialog, which) -> {
+                            Database.Comment.deleteComment(comment.get_postId(), comment.get_id(), aVoid -> {
+                                Database.Notification.deleteNotifications(post.get_userId(), Notification.Types.comment, user.get_id(), post.get_id(),
+                                        Void1 -> {
+                                            Toast.makeText(getContext(), "Comment deleted!", Toast.LENGTH_SHORT).show();
+                                            dialog.cancel();
+                                        },
+                                        e -> {
+                                            Log.e("CommentFragment", "Error: " + e.getMessage());
+                                            e.printStackTrace();
+                                            dialog.cancel();
+                                        });
+                            }, e -> {
+                                dialog.cancel();
+                                Log.e("CommentFragment", "Error: " + e.getMessage());
+                                e.printStackTrace();
+                            });
+                        }).create().show();
+            }
+        });
+
+        rv_comments.setAdapter(mAdapter);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        final Post post = CommentFragmentArgs.fromBundle(requireArguments()).getPost();
+        post = CommentFragmentArgs.fromBundle(requireArguments()).getPost();
         Log.d("CommentFragment",post.get_id());
 
         CommentsUsersChangesSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(CommentsUsersChangesSharedViewModel.class);
