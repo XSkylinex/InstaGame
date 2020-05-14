@@ -68,14 +68,20 @@ public class NotificationAPI {
             }
         });
     }
-    public void listenNotifications(String userId,Consumer<Notification> onAdded, Consumer<Notification> onModified,
-                                    Consumer<Notification> onRemoved, Consumer<Exception> onFailure){
+    public void listenNotifications(String userId,
+                                    Runnable onStart,
+                                    Consumer<Notification> onAdded,
+                                    Consumer<Notification> onModified,
+                                    Consumer<Notification> onRemoved,
+                                    Runnable onComplete,
+                                    Consumer<Exception> onFailure){
         getCollection(userId).addSnapshotListener((queryDocumentSnapshots, e) -> {
             if (e != null){
                 onFailure.accept(e);
                 return;
             }else {
                 final List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
+                onStart.run();
                 for (DocumentChange documentChange : documentChanges) {
                     final Notification notification = documentChange.getDocument().toObject(Notification.class);
                     switch (documentChange.getType()){
@@ -93,6 +99,7 @@ public class NotificationAPI {
                         }
                     }
                 }
+                onComplete.run();
             }
         });
     }

@@ -1,6 +1,5 @@
 package com.example.test.fragment;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,7 +32,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.function.Consumer;
 
 
 public class CommentFragment extends Fragment {

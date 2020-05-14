@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.test.R;
 import com.example.test.adapter.NotificationAdapter;
@@ -31,6 +32,8 @@ import java.util.Map;
 
 public class NotificationFragment extends Fragment {
 
+    private ProgressBar _pbNnotifications;
+
     private NotificationAdapter mAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,6 +46,9 @@ public class NotificationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
+        this._pbNnotifications = view.findViewById(R.id.pb_notifications);
+
+
         RecyclerView rv_post = view.findViewById(R.id.rv_notifications_list);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
@@ -72,7 +78,10 @@ public class NotificationFragment extends Fragment {
         String userId = Auth.getUserId();
         Map<Notification,User> notificationUserMap = new HashMap<>();
         Map<Notification,Post> notificationPostMap = new HashMap<>();
-        Database.Notification.listenNotifications(userId, notification -> {
+        Database.Notification.listenNotifications(userId,
+                () -> {
+                    this._pbNnotifications.setVisibility(View.GONE);
+                },notification -> {
             Database.User.getUser(notification.get_creator(), user -> {
                 notificationUserMap.put(notification,user);
                 mAdapter.updateData(notification,notificationPostMap.get(notification),user);
@@ -90,8 +99,10 @@ public class NotificationFragment extends Fragment {
             });
         }, notification ->
                 mAdapter.updateData(notification,notificationPostMap.get(notification),notificationUserMap.get(notification)),
-                notification -> mAdapter.removeData(notification),
-                e -> {
+                notification -> mAdapter.removeData(notification)
+                ,() -> {
+
+                },e -> {
             e.printStackTrace();
             Log.e("NotificationFragment",e.getMessage());
         });

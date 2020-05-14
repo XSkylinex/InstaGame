@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +30,7 @@ public class MainFragment extends Fragment {
 
 
     private PostAdapter mAdapter;
+    private ProgressBar pb_main;
 
 
     @Nullable
@@ -45,6 +47,7 @@ public class MainFragment extends Fragment {
         ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
 
         Log.d("MainFragment","onViewCreated");
+        pb_main = view.findViewById(R.id.pb_main);
         RecyclerView recyclerView = view.findViewById(R.id.my_recycler_view);
 
         // use this setting to improve performance if you know that changes
@@ -84,7 +87,10 @@ public class MainFragment extends Fragment {
         PostsUsersChangesSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsUsersChangesSharedViewModel.class);
 
         final LiveData<Map<Post,User>> posts = mViewModel.getPostsUsers();
-        posts.observe(this.getViewLifecycleOwner(),postUserMap -> mAdapter.setData(postUserMap));
+        posts.observe(this.getViewLifecycleOwner(),postUserMap -> {
+            pb_main.setVisibility(View.GONE);
+            mAdapter.setData(postUserMap);
+        });
     }
 
     @Override

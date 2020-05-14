@@ -131,6 +131,7 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
             postsusers.setValue(entries);
             UserListenerCount userListenerCount = stringListenerMap.get(post.get_userId());
             assert userListenerCount != null;
+            Log.d("PostsUsersChangesSharedViewModel","on post removed: "+post.get_userId()+"\t"+userListenerCount.count);
             userListenerCount.removerListener();//this post not anymore liston to user
             Log.d("PostsUsersChangesSharedViewModel","user listener removed for "+post.get_id()+"\t count: "+ userListenerCount.count);
             if (userListenerCount.count <= 0){ // if no one left listen to this user

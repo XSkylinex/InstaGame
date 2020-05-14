@@ -176,7 +176,12 @@ public class CommentAPI {
         return new ListenerFirebaseAdapter(listenerRegistration);
     }
 
-    public Listener listenCommentsChangesFromPost(String postId,Consumer<Comment> onAdded, Consumer<Comment> onModified, Consumer<Comment> onRemoved, Consumer<Exception> onFailure){
+    public Listener listenCommentsChangesFromPost(String postId ,Runnable onStart,
+                                                  Consumer<Comment> onAdded,
+                                                  Consumer<Comment> onModified,
+                                                  Consumer<Comment> onRemoved,
+                                                  Runnable onComplete,
+                                                  Consumer<Exception> onFailure){
         ListenerRegistration listenerRegistration =
                 getCollection(postId) //.whereEqualTo("_postId",postId)
                         .addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -186,6 +191,7 @@ public class CommentAPI {
                             }
                             assert queryDocumentSnapshots != null;
                             List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
+                            onStart.run();
                             for (DocumentChange documentChange : documentChanges) {
                                 Comment comment = documentChange.getDocument().toObject(Comment.class);
                                 switch (documentChange.getType()) {
@@ -200,6 +206,7 @@ public class CommentAPI {
                                         break;
                                 }
                             }
+                            onComplete.run();
                         });
         return new ListenerFirebaseAdapter(listenerRegistration);
     }

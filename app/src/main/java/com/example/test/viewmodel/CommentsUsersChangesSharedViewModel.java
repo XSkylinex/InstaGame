@@ -78,7 +78,10 @@ public class CommentsUsersChangesSharedViewModel extends ViewModel {
         userMap = new HashMap<>();
         stringListenerMap = new HashMap<>();
         entries = new HashMap<>();
-        this.commentListener = Database.Comment.listenCommentsChangesFromPost(postId,comment -> {
+        this.commentListener = Database.Comment.listenCommentsChangesFromPost(postId,() -> {
+            // on starting retrieve data
+            Log.i("CommentsUsersChangesSharedViewModel","on start");
+        },comment -> {
             // added comment
             Log.d("CommentsUsersChangesSharedViewModel","on comment added: "+comment.get_id());
             final String postUserId = comment.get_userId();
@@ -125,6 +128,10 @@ public class CommentsUsersChangesSharedViewModel extends ViewModel {
                 Log.d("CommentsUsersChangesSharedViewModel","user listener removed for "+comment.get_id()+"\t removed");
             }
 
+
+        },() -> {
+            // on finish retrieve data
+            Log.i("CommentsUsersChangesSharedViewModel","on finish");
 
         }, e -> {
             // on error
