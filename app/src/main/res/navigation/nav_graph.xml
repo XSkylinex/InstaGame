@@ -24,12 +24,15 @@
         android:name="com.example.test.fragment.CameraFragment"
         tools:layout="@layout/fragment_camera" />
     <fragment
-        android:id="@+id/searchFragment"
-        android:name="com.example.test.fragment.SearchFragment"
-        tools:layout="@layout/fragment_search">
+        android:id="@+id/gridFragment"
+        android:name="com.example.test.fragment.GridFragment"
+        tools:layout="@layout/fragment_grid">
         <action
             android:id="@+id/action_searchFragment_to_postFragment"
             app:destination="@id/postFragment" />
+        <action
+            android:id="@+id/action_gridFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/userProfileFragment"
@@ -117,5 +120,13 @@
         <argument
             android:name="coordinate"
             app:argType="com.example.test.models.Coordinate" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.test.fragment.SearchFragment"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_OtherUserProfileFragment"
+            app:destination="@id/OtherUserProfileFragment" />
     </fragment>
 </navigation>

@@ -83,24 +83,21 @@ public class UpdateProfileFragment extends Fragment {
             }
 
             _newUserName.setText(user.get_userName());
-            _cancel_button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(user.get_imageUrl() != null){
-                        Picasso.get().load(user.get_imageUrl()).into(_img_profile);
-                    }else{
-                        _img_profile.setImageResource(R.drawable.ic_person_black_24dp);
-                    }
-                    if(user.get_userBio() != null){
-                        _userBio.setText(user.get_userBio());
-                    }else {
-                        _userBio.setText("");
-                    }
-                    _newUserName.setText(user.get_userName());
-                    _oldPassword.setText("");
-                    _newPassword.setText("");
-                    _confirmNewPassword.setText("");
+            _cancel_button.setOnClickListener(v -> {
+                if(user.get_imageUrl() != null){
+                    Picasso.get().load(user.get_imageUrl()).into(_img_profile);
+                }else{
+                    _img_profile.setImageResource(R.drawable.ic_person_black_24dp);
                 }
+                if(user.get_userBio() != null){
+                    _userBio.setText(user.get_userBio());
+                }else {
+                    _userBio.setText("");
+                }
+                _newUserName.setText(user.get_userName());
+                _oldPassword.setText("");
+                _newPassword.setText("");
+                _confirmNewPassword.setText("");
             });
             _update_button.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -111,73 +108,83 @@ public class UpdateProfileFragment extends Fragment {
                     String confirmPassword = _confirmNewPassword.getText()+"";
                     String useBio = _userBio.getText()+"";
 
-                    // Prompt the user to re-provide their sign-in credentials
+                    Database.User.isUserNameExist(userText, isUserNameExist -> {
+                        if (isUserNameExist.getKey() && !isUserNameExist.getValue().equals(Auth.getUserId())){
+                            Toast.makeText(requireContext(),"username already taken!",Toast.LENGTH_LONG).show();
+                            return;
+                        }
 
-                    // username update
-                    // image update
-                    if (!userText.isEmpty()){
-                        user.set_userName(userText);
-                    }
-                    user.set_userBio(useBio);
-                    if (file_image != null){
-                        Storage.uploadProfileImage(file_image, user.get_id(), new Consumer<Uri>() {
-                            @Override
-                            public void accept(Uri uri) {
-                                user.set_imageUrl(uri.toString());
-                                Database.User.updateUser(user, new Consumer<Void>() {
-                                    @Override
-                                    public void accept(Void aVoid) {
-                                        Toast.makeText(getContext(), "information update!", Toast.LENGTH_SHORT).show();
-                                    }
-                                }, new Consumer<Exception>() {
-                                    @Override
-                                    public void accept(Exception e) {
-                                        Toast.makeText(getContext(), "information failed to update!", Toast.LENGTH_SHORT).show();
-                                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                        }, new Consumer<Exception>() {
-                            @Override
-                            public void accept(Exception e) {
+                        // username update
+                        // image update
+                        if (!userText.isEmpty()){
+                            user.set_userName(userText);
+                        }
+                        user.set_userBio(useBio);
+                        if (file_image != null){
+                            Storage.uploadProfileImage(file_image, user.get_id(), new Consumer<Uri>() {
+                                @Override
+                                public void accept(Uri uri) {
+                                    user.set_imageUrl(uri.toString());
+                                    Database.User.updateUser(user, new Consumer<Void>() {
+                                        @Override
+                                        public void accept(Void aVoid) {
+                                            Toast.makeText(getContext(), "information update!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }, new Consumer<Exception>() {
+                                        @Override
+                                        public void accept(Exception e) {
+                                            Toast.makeText(getContext(), "information failed to update!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }, new Consumer<Exception>() {
+                                @Override
+                                public void accept(Exception e) {
 
-                            }
-                        });
+                                }
+                            });
 
-                    }else {
-                        Database.User.updateUser(user, new Consumer<Void>() {
-                            @Override
-                            public void accept(Void aVoid) {
-                                Toast.makeText(getContext(), "information update!", Toast.LENGTH_SHORT).show();
-                            }
-                        }, new Consumer<Exception>() {
-                            @Override
-                            public void accept(Exception e) {
-                                Toast.makeText(getContext(), "information failed to update!", Toast.LENGTH_SHORT).show();
-                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
+                        }else {
+                            Database.User.updateUser(user, new Consumer<Void>() {
+                                @Override
+                                public void accept(Void aVoid) {
+                                    Toast.makeText(getContext(), "information update!", Toast.LENGTH_SHORT).show();
+                                }
+                            }, new Consumer<Exception>() {
+                                @Override
+                                public void accept(Exception e) {
+                                    Toast.makeText(getContext(), "information failed to update!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
 
-                    //password update
-                    if(oldPassword.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()){
-                        // enter code here NEVER!!!
-                    }
-                    else if(!password.equals(confirmPassword)) {
-                        Toast.makeText(getContext(), "Password not Match", Toast.LENGTH_LONG).show();
-                    }else {
-                        Auth.updatePassword(user.get_email(), oldPassword, password, new Consumer<Void>() {
-                            @Override
-                            public void accept(Void aVoid) {
-                                Toast.makeText(getContext(), "updated success", Toast.LENGTH_LONG).show();
-                            }
-                        }, new Consumer<Exception>() {
-                            @Override
-                            public void accept(Exception e) {
-                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
+                        //password update
+                        if(oldPassword.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()){
+                            // enter code here NEVER!!!
+                        }
+                        else if(!password.equals(confirmPassword)) {
+                            Toast.makeText(getContext(), "Password not Match", Toast.LENGTH_LONG).show();
+                        }else {
+                            Auth.updatePassword(user.get_email(), oldPassword, password, new Consumer<Void>() {
+                                @Override
+                                public void accept(Void aVoid) {
+                                    Toast.makeText(getContext(), "updated success", Toast.LENGTH_LONG).show();
+                                }
+                            }, new Consumer<Exception>() {
+                                @Override
+                                public void accept(Exception e) {
+                                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }, e -> {
+                        Toast.makeText(getContext(), "information failed to update!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+
+
 
 
                 }

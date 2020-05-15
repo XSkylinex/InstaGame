@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
 
 import com.example.test.R;
@@ -19,6 +20,9 @@ import com.example.test.activity.MainActivity;
 import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.User;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.Map;
 
 public class RegisterFragment extends Fragment {
 
@@ -53,28 +57,42 @@ public class RegisterFragment extends Fragment {
             String username = et_username.getText()+"";
             String email = et_email.getText()+"";
             String password = et_password.getText()+"";
-
-            Auth.SignUp(email, password, userId -> {
-                User user = new User(userId,email,username,null,null);
-                Database.User.addUser(user, aVoid -> {
-                    Toast.makeText(getContext(), "Welcome "+username+"!", Toast.LENGTH_SHORT).show();
-                    pbRegister.setVisibility(View.GONE);
-                    btnSignUp.setClickable(true);
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                }, e -> {
+            Database.User.isUserNameExist(username, userNameExist -> {
+                if (userNameExist.getKey()){
+                    Toast.makeText(getContext(), "username is already taken!\nplease choose another one", Toast.LENGTH_SHORT).show();
+                }else {
+                    Auth.SignUp(email, password, userId -> {
+                        User user = new User(userId,email,username,null,null);
+                        Database.User.addUser(user, aVoid -> {
+                            Toast.makeText(getContext(), "Welcome "+username+"!", Toast.LENGTH_SHORT).show();
+                            pbRegister.setVisibility(View.GONE);
+                            btnSignUp.setClickable(true);
+                            Intent intent = new Intent(getActivity(), MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        }, e -> {
+                            //not success add to database
+                            pbRegister.setVisibility(View.GONE);
+                            btnSignUp.setClickable(true);
+                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                    }, e -> {
+                        // problems with the registration like Mail exist
+                        pbRegister.setVisibility(View.GONE);
+                        btnSignUp.setClickable(true);
+                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }, new Consumer<Exception>() {
+                @Override
+                public void accept(Exception e) {
                     //not success add to database
                     pbRegister.setVisibility(View.GONE);
                     btnSignUp.setClickable(true);
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-            }, e -> {
-                // problems with the registration like Mail exist
-                pbRegister.setVisibility(View.GONE);
-                btnSignUp.setClickable(true);
-                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             });
+
         });
     }
 

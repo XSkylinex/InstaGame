@@ -1,5 +1,6 @@
 package com.example.test.contollers.database;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Consumer;
 
@@ -7,6 +8,8 @@ import com.example.test.contollers.Auth;
 import com.example.test.models.User;
 import com.example.test.models.listener.Listener;
 import com.example.test.models.listener.ListenerFirebaseAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -16,9 +19,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserApi {
 
@@ -154,6 +159,23 @@ public class UserApi {
         usersCollection.document(userId).collection("posts").document(postId).delete().addOnSuccessListener(onComplete::accept).addOnFailureListener(onFailure::accept);
     }
 
+    public void isUserNameExist(String userName, Consumer<Map.Entry<Boolean,String>> onComplete, Consumer<Exception> onFailure){
+        usersCollection.whereEqualTo("_userName",userName).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()){
+                        assert task.getResult()!=null;
+                        final List<DocumentSnapshot> documents = task.getResult().getDocuments();
+                        if (!documents.isEmpty()){
+                            onComplete.accept(new AbstractMap.SimpleImmutableEntry<>(true, documents.get(0).getId()));
+                        }else {
+                            onComplete.accept(new AbstractMap.SimpleImmutableEntry<>(false,null));
+                        }
+
+                    }else {
+                        onFailure.accept(task.getException());
+                    }
+                });
+    }
 }
 
 //create post api
