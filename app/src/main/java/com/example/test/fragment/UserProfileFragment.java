@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +46,7 @@ public class UserProfileFragment extends Fragment {
     private TextView tv_UserFullName;
     private TextView tv_userDescription;
     private TextView tv_posts_count;
+    private ProgressBar pb_userProfile;
 
 
     @Override
@@ -68,6 +70,7 @@ public class UserProfileFragment extends Fragment {
         this.tv_UserFullName = view.findViewById(R.id.tv_UserFullName);
         this.tv_userDescription = view.findViewById(R.id.tv_userDescription);
         this.tv_posts_count = view.findViewById(R.id.tv_posts_count);
+        this.pb_userProfile = view.findViewById(R.id.pb_user_profile);
 
         imageAdapter = new PostImageAdapter(getContext(),new ArrayList<>());
         gridview.setOnItemClickListener((parent, view1, position, id) -> {
@@ -92,6 +95,7 @@ public class UserProfileFragment extends Fragment {
         final LiveData<List<Post>> posts = mViewModel.getPosts();
         tv_posts_count.setText("0");
         posts.observe(this.getViewLifecycleOwner(),posts1 -> {
+            this.pb_userProfile.setVisibility(View.GONE);
             final String userId = Auth.getUserId();
             posts1 = posts1.stream().filter(post -> post.get_userId().equals(userId)).sorted((o1, o2) -> o2.get_date().compareTo(o1.get_date())).collect(Collectors.toList());
             final int size = posts1.size();

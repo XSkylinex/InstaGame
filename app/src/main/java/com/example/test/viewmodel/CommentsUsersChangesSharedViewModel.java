@@ -81,6 +81,7 @@ public class CommentsUsersChangesSharedViewModel extends ViewModel {
         this.commentListener = Database.Comment.listenCommentsChangesFromPost(postId,() -> {
             // on starting retrieve data
             Log.i("CommentsUsersChangesSharedViewModel","on start");
+            commentsusers.setValue(new HashMap<>());
         },comment -> {
             // added comment
             Log.d("CommentsUsersChangesSharedViewModel","on comment added: "+comment.get_id());

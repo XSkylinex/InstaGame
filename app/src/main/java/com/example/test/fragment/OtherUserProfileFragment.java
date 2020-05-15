@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public class OtherUserProfileFragment extends Fragment {
     private TextView tv_UserFullName;
     private TextView tv_userDescription;
     private TextView tv_posts_count;
+    private ProgressBar _pbOtherUserProfile;
 
 
     @Override
@@ -55,6 +57,7 @@ public class OtherUserProfileFragment extends Fragment {
         this.tv_UserFullName = view.findViewById(R.id.tv_UserFullName);
         this.tv_userDescription = view.findViewById(R.id.tv_userDescription);
         this.tv_posts_count = view.findViewById(R.id.tv_posts_count);
+        this._pbOtherUserProfile = view.findViewById(R.id.pb_other_user_profile);
 
         imageAdapter = new PostImageAdapter(getContext(),new ArrayList<>());
         gridview.setOnItemClickListener((parent, view1, position, id) -> {
@@ -79,6 +82,7 @@ public class OtherUserProfileFragment extends Fragment {
 
         posts.observe(this.getViewLifecycleOwner(),posts1 -> {
             posts1 = posts1.stream().filter(post -> post.get_userId().equals(userId)).sorted((o1, o2) -> o2.get_date().compareTo(o1.get_date())).collect(Collectors.toList());
+            this._pbOtherUserProfile.setVisibility(View.GONE);
             Log.d("posts",posts1.toString());
             tv_posts_count.setText(posts1.size()+"");
             imageAdapter.addAll(posts1);

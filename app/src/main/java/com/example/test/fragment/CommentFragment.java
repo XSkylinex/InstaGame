@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ public class CommentFragment extends Fragment {
 
     private EditText et_comment;
     private Button btn_comment_send;
+    private ProgressBar _pbComment;
 
     private CommentAdapter mAdapter;
 
@@ -57,7 +59,7 @@ public class CommentFragment extends Fragment {
         RecyclerView rv_comments = view.findViewById(R.id.rv_comments);
         et_comment = view.findViewById(R.id.et_comment);
         btn_comment_send = view.findViewById(R.id.btn_comment_send);
-
+        this._pbComment = view.findViewById(R.id.pb_comment);
 
         rv_comments.setHasFixedSize(false);
 
@@ -134,9 +136,9 @@ public class CommentFragment extends Fragment {
 
 
         final LiveData<Map<Comment, User>> commentsUsers = mViewModel.getCommentsUsers(post.get_id());
-
         commentsUsers.observe(this.getViewLifecycleOwner(),commentUserMap -> {
             Log.d("comments",commentUserMap.toString());
+            this._pbComment.setVisibility(View.GONE);
             mAdapter.setData(commentUserMap);
         });
 

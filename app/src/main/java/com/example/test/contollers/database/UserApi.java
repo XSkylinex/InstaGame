@@ -49,7 +49,9 @@ public class UserApi {
                 .addOnFailureListener(onFailure::accept);
     }
 
-    public Listener listenUser(String userId, Consumer<User> onComplete, Consumer<Exception> onFailure){
+    public Listener listenUser(String userId,
+                               Consumer<User> onComplete,
+                               Consumer<Exception> onFailure){
         ListenerRegistration listenerRegistration = usersCollection.document(userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
@@ -57,7 +59,6 @@ public class UserApi {
                     onFailure.accept(e);
                     return;
                 }
-
                 if (snapshot != null && snapshot.exists()) {
                     User user = snapshot.toObject(User.class);
                     onComplete.accept(user);

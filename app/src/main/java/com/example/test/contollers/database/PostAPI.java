@@ -100,7 +100,7 @@ public class PostAPI {
         return new ListenerFirebaseAdapter(listenerRegistration);
     }
 
-    public Listener listenPostsChanges(Consumer<Post> onAdded, Consumer<Post> onModified, Consumer<Post> onRemoved, Consumer<Exception> onFailure){
+    public Listener listenPostsChanges(Runnable onStart, Consumer<Post> onAdded, Consumer<Post> onModified, Consumer<Post> onRemoved,Runnable onFinish, Consumer<Exception> onFailure){
         ListenerRegistration listenerRegistration = postsCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -110,6 +110,7 @@ public class PostAPI {
                 }
                 assert queryDocumentSnapshots != null;
                 List<DocumentChange> documentChanges = queryDocumentSnapshots.getDocumentChanges();
+                onStart.run();
                 for (DocumentChange documentChange : documentChanges) {
                     Post post = documentChange.getDocument().toObject(Post.class);
                     switch (documentChange.getType()) {
@@ -124,6 +125,7 @@ public class PostAPI {
                             break;
                     }
                 }
+                onFinish.run();
             }
         });
         return new ListenerFirebaseAdapter(listenerRegistration);

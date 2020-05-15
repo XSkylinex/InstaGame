@@ -86,7 +86,9 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
         // Do an asynchronous operation to fetch users.
         userMap = new HashMap<>();
         stringListenerMap = new HashMap<>();
-        this.postsListener = Database.Post.listenPostsChanges(post -> {
+        this.postsListener = Database.Post.listenPostsChanges(() -> {
+            postsusers.setValue(new HashMap<>());
+        },post -> {
             // added post
             Log.d("PostsUsersChangesSharedViewModel","on post added: "+post.get_id());
             final String postUserId = post.get_userId();
@@ -142,7 +144,9 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
             }
 
 
-        }, e -> {
+        }, () -> {
+
+        },e -> {
             // on error
             Log.e("PostsUsersChangesSharedViewModel","Error: "+e.getMessage());
             e.printStackTrace();

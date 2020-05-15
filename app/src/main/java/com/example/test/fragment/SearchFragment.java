@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +30,8 @@ public class SearchFragment extends Fragment {
 
     private PostImageAdapter imageAdapter;
 
+    private ProgressBar pbSearch;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -39,6 +42,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
+        this.pbSearch = view.findViewById(R.id.pb_search);
 
         GridView gridview = view.findViewById(R.id.usergridview);
         imageAdapter = new PostImageAdapter(getContext(),new ArrayList<>());
@@ -62,6 +66,7 @@ public class SearchFragment extends Fragment {
         final LiveData<List<Post>> posts = mViewModel.getPosts();
 
         posts.observe(this.getViewLifecycleOwner(),posts1 -> {
+            this.pbSearch.setVisibility(View.GONE);
             Log.d("posts",posts1.toString());
             imageAdapter.addAll(posts1);
         });

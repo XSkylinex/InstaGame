@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ public class RegisterFragment extends Fragment {
 
     private Button btnSignUp;
     private EditText et_username, et_email, et_password;
+    private ProgressBar pbRegister;
 
     @Nullable
     @Override
@@ -37,6 +39,7 @@ public class RegisterFragment extends Fragment {
         et_username = view.findViewById(R.id.et_username);
         et_email = view.findViewById(R.id.et_email);
         et_password = view.findViewById(R.id.et_password);
+        pbRegister = view.findViewById(R.id.pb_register);
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -45,6 +48,7 @@ public class RegisterFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         btnSignUp.setOnClickListener(v -> {
+            pbRegister.setVisibility(View.VISIBLE);
             btnSignUp.setClickable(false);
             String username = et_username.getText()+"";
             String email = et_email.getText()+"";
@@ -54,15 +58,20 @@ public class RegisterFragment extends Fragment {
                 User user = new User(userId,email,username,null);
                 Database.User.addUser(user, aVoid -> {
                     Toast.makeText(getContext(), "Welcome "+username+"!", Toast.LENGTH_SHORT).show();
+                    pbRegister.setVisibility(View.GONE);
                     btnSignUp.setClickable(true);
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                 }, e -> {
+                    //not success add to database
+                    pbRegister.setVisibility(View.GONE);
                     btnSignUp.setClickable(true);
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
             }, e -> {
+                // problems with the registration like Mail exist
+                pbRegister.setVisibility(View.GONE);
                 btnSignUp.setClickable(true);
                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             });
