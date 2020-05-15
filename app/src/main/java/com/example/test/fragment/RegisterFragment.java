@@ -55,7 +55,7 @@ public class RegisterFragment extends Fragment {
             String password = et_password.getText()+"";
 
             Auth.SignUp(email, password, userId -> {
-                User user = new User(userId,email,username,null);
+                User user = new User(userId,email,username,null,null);
                 Database.User.addUser(user, aVoid -> {
                     Toast.makeText(getContext(), "Welcome "+username+"!", Toast.LENGTH_SHORT).show();
                     pbRegister.setVisibility(View.GONE);

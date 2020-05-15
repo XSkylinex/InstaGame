@@ -109,7 +109,7 @@ public class UserProfileFragment extends Fragment {
             if (user.get_imageUrl() != null)
                 Picasso.get().load(user.get_imageUrl()).into(iv_user_pic);
             tv_UserFullName.setText(user.get_userName());
-            tv_userDescription.setText("WIP");
+            tv_userDescription.setText(user.get_userBio());
             if(getActivity()!=null)
                 ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(user.get_userName());
         }, e -> {

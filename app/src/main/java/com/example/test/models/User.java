@@ -18,6 +18,10 @@ public class User implements Serializable {
     private String _userName;
     @Nullable
     private String _imageUrl;
+
+    @Nullable
+    private String _userBio;
+
     private boolean _isAdmin;
 
     private User(){}
@@ -29,14 +33,19 @@ public class User implements Serializable {
         this._userName = user._userName;
         this._imageUrl = user._imageUrl;
         this._isAdmin = user._isAdmin;
+        this._userBio = user._userBio;
     }
 
-    public User(@NonNull String _id, @NonNull String _email, @NonNull String _userName, @Nullable String _imageUrl) {
+
+
+    public User(@NonNull String _id, @NonNull String _email, @NonNull String _userName, @Nullable String _imageUrl, @Nullable String _userBio) {
         this._id = _id;
         this._email = _email;
         this._userName = _userName;
         this._imageUrl = _imageUrl;
+        this._userBio = _userBio;
         this._isAdmin = false;
+
     }
 
     @NonNull
@@ -83,6 +92,15 @@ public class User implements Serializable {
         this._isAdmin = _isAdmin;
     }
 
+    @Nullable
+    public String get_userBio() {
+        return _userBio;
+    }
+
+    public void set_userBio(@Nullable String _userBio) {
+        this._userBio = _userBio;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -96,7 +114,6 @@ public class User implements Serializable {
         return Objects.hash(_id);
     }
 
-    @NotNull
     @Override
     public String toString() {
         return "User{" +
@@ -104,6 +121,7 @@ public class User implements Serializable {
                 ", _email='" + _email + '\'' +
                 ", _userName='" + _userName + '\'' +
                 ", _imageUrl='" + _imageUrl + '\'' +
+                ", _userBio='" + _userBio + '\'' +
                 ", _isAdmin=" + _isAdmin +
                 '}';
     }

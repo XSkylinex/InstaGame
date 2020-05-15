@@ -36,8 +36,7 @@ public class UpdateProfileFragment extends Fragment {
     private static final int PERMISSION_ID = 6789;
 
     private SquareImageView _img_profile;
-    private TextView _newUserName;
-    private EditText _newPassword, _confirmNewPassword, _oldPassword;
+    private EditText _newUserName, _newPassword, _confirmNewPassword, _oldPassword, _userBio;
     private Button _update_button, _cancel_button;
 
     private File file_image = null;
@@ -57,12 +56,13 @@ public class UpdateProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
         this._img_profile = view.findViewById(R.id.im_profilePic);
-        this._newUserName = view.findViewById(R.id.tv_newUserName);
+        this._newUserName = view.findViewById(R.id.et_newUserName);
         this._newPassword = view.findViewById(R.id.tv_input_new_password);
         this._confirmNewPassword = view.findViewById(R.id.tv_input_confirm_password);
         this._oldPassword = view.findViewById(R.id.tv_input_old_password);
         this._update_button = view.findViewById(R.id.btn_update);
         this._cancel_button = view.findViewById(R.id.btn_cancel);
+        this._userBio = view.findViewById(R.id.et_userDescription_update);
     }
 
     @Override
@@ -76,6 +76,11 @@ public class UpdateProfileFragment extends Fragment {
             }else{
                 _img_profile.setImageResource(R.drawable.ic_person_black_24dp);
             }
+            if(user.get_userBio() != null){
+                _userBio.setText(user.get_userBio());
+            }else {
+                _userBio.setText("");
+            }
 
             _newUserName.setText(user.get_userName());
             _cancel_button.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +90,11 @@ public class UpdateProfileFragment extends Fragment {
                         Picasso.get().load(user.get_imageUrl()).into(_img_profile);
                     }else{
                         _img_profile.setImageResource(R.drawable.ic_person_black_24dp);
+                    }
+                    if(user.get_userBio() != null){
+                        _userBio.setText(user.get_userBio());
+                    }else {
+                        _userBio.setText("");
                     }
                     _newUserName.setText(user.get_userName());
                     _oldPassword.setText("");
@@ -99,6 +109,7 @@ public class UpdateProfileFragment extends Fragment {
                     String oldPassword = _oldPassword.getText()+"";
                     String password = _newPassword.getText()+"";
                     String confirmPassword = _confirmNewPassword.getText()+"";
+                    String useBio = _userBio.getText()+"";
 
                     // Prompt the user to re-provide their sign-in credentials
 
@@ -107,6 +118,7 @@ public class UpdateProfileFragment extends Fragment {
                     if (!userText.isEmpty()){
                         user.set_userName(userText);
                     }
+                    user.set_userBio(useBio);
                     if (file_image != null){
                         Storage.uploadProfileImage(file_image, user.get_id(), new Consumer<Uri>() {
                             @Override
