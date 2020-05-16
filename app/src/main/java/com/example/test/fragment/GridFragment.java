@@ -28,6 +28,7 @@ import com.example.test.viewmodel.PostsSharedViewModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GridFragment extends Fragment {
@@ -79,9 +80,11 @@ public class GridFragment extends Fragment {
         final LiveData<List<Post>> posts = mViewModel.getPosts();
 
         posts.observe(this.getViewLifecycleOwner(),posts1 -> {
+            final ArrayList<Post> postArrayList = new ArrayList<>(posts1);
+            Collections.shuffle(postArrayList);
             this.pbGrid.setVisibility(View.GONE);
-            Log.d("posts",posts1.toString());
-            imageAdapter.addAll(posts1);
+            Log.d("posts",postArrayList.toString());
+            imageAdapter.addAll(postArrayList);
         });
 
 
