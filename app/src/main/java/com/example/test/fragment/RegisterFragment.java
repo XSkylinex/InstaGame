@@ -20,9 +20,6 @@ import com.example.test.activity.MainActivity;
 import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.User;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.Map;
 
 public class RegisterFragment extends Fragment {
 

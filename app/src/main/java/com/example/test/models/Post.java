@@ -2,13 +2,18 @@ package com.example.test.models;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
+@Entity
 public class Post implements Serializable {
 
+    @PrimaryKey
     @NonNull
     private String _id;
     @NonNull
@@ -17,7 +22,8 @@ public class Post implements Serializable {
     private String _userId;
     @NonNull
     private String _content;
-    @NonNull
+    @Embedded
+    @Nullable
     private Coordinate _coordinate;
     @NonNull
     private Date _date;

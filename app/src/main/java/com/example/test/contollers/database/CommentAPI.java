@@ -3,8 +3,6 @@ package com.example.test.contollers.database;
 import androidx.annotation.Nullable;
 
 import com.example.test.models.Comment;
-import com.example.test.models.Notification;
-import com.example.test.models.Post;
 import com.example.test.models.listener.Listener;
 import com.example.test.models.listener.ListenerFirebaseAdapter;
 import com.google.android.gms.tasks.OnSuccessListener;

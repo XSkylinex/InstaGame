@@ -1,8 +1,11 @@
 package com.example.test.models;
 
+import androidx.room.Entity;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+@Entity
 public class Coordinate implements Serializable {
     private double latitude;
     private double longitude;
