@@ -1,5 +1,6 @@
 package com.example.test.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -40,9 +41,9 @@ import java.util.stream.Collectors;
 
 public class SearchFragment extends Fragment {
 
-    ListView lv_user_names;
-    ProgressBar pb_search;
-    ArrayAdapter<String> arrayAdapter;
+    private ListView lv_user_names;
+    private ProgressBar pb_search;
+    private ArrayAdapter<String> arrayAdapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +74,6 @@ public class SearchFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
 
         PostsUsersChangesSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsUsersChangesSharedViewModel.class);
 
@@ -122,6 +122,16 @@ public class SearchFragment extends Fragment {
             }
         });
 
+
+
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem menuItem = menu.findItem(R.id.search_icon);
+        menuItem.expandActionView();
+
     }
 }
