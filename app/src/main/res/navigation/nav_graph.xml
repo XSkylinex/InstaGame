@@ -120,6 +120,9 @@
         <argument
             android:name="coordinate"
             app:argType="com.example.test.models.Coordinate" />
+        <action
+            android:id="@+id/action_mapFragment_to_postFragment"
+            app:destination="@id/postFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"

@@ -157,7 +157,7 @@ public class PostAPI {
 
                     postsCollection.document(postId).collection(CommentAPI.Comments).get().addOnSuccessListener(queryDocumentSnapshots1 ->{
                         queryDocumentSnapshots1.getDocuments().forEach(documentSnapshot ->
-                                batch.delete(postsCollection.document(postId).collection(LIKES).document(documentSnapshot.getId())));
+                                batch.delete(postsCollection.document(postId).collection(CommentAPI.Comments).document(documentSnapshot.getId())));
                         batch.commit().addOnSuccessListener(onComplete::accept).addOnFailureListener(onFailure::accept);
 
                     }).addOnFailureListener(onFailure::accept);

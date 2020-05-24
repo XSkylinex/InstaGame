@@ -90,7 +90,7 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        imageAdapter.notifyDataSetChanged();
         final PostsSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
         final LiveData<List<Post>> posts = mViewModel.getPosts();
         tv_posts_count.setText("0");
@@ -101,6 +101,7 @@ public class UserProfileFragment extends Fragment {
             final int size = posts1.size();
             Log.d("posts", size +"\t"+posts1.toString());
             tv_posts_count.setText(size+"");
+            imageAdapter.clear();
             imageAdapter.addAll(posts1);
         });
 

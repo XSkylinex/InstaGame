@@ -7,14 +7,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.test.R;
 import com.example.test.models.Coordinate;
+import com.example.test.models.Post;
 import com.example.test.viewmodel.PostsUsersChangesSharedViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,7 +26,11 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
@@ -75,17 +83,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 final Coordinate coordinate = post.get_coordinate();
                 if (coordinate == null) return;
                 Log.d("MapFragment",coordinate.toString());
-                final MarkerOptions markerOptions = new MarkerOptions()
+                final MarkerOptions markerOptions;
+                markerOptions = new MarkerOptions()
                         .position(new LatLng(coordinate.getLatitude(), coordinate.getLongitude()))
                         .title(user.get_userName())
                         .snippet(post.get_content())
                         .icon(BitmapDescriptorFactory.defaultMarker
                                 (BitmapDescriptorFactory.HUE_RED))
                         .draggable(false);
-                map.addMarker(markerOptions);
+                final Marker marker = map.addMarker(markerOptions);
+                marker.setTag(post);
+
             });
         });
-
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                final Post markerPost = (Post) marker.getTag();
+                assert markerPost != null;
+                NavDirections navDirections = MapFragmentDirections.actionMapFragmentToPostFragment(markerPost.get_id());
+                Navigation.findNavController(requireView()).navigate(navDirections);
+//                Toast.makeText(getContext(), markerPost.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 

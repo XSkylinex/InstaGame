@@ -95,6 +95,7 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
             if (!userMap.containsKey(postUserId)) {
 
                 final UserListenerCount userListenerCount = new UserListenerCount(postUserId, null);
+                userListenerCount.addListener();
                 stringListenerMap.put(postUserId,userListenerCount);
                 userListenerCount.userListener = Database.User.listenUser(postUserId, user -> {
 
@@ -106,7 +107,7 @@ public class PostsUsersChangesSharedViewModel extends ViewModel {
                     userMap.put(postUserId,user); //get connect between user and post
                     onAdded.accept(new AbstractMap.SimpleEntry<>(post,user)); //display information
                     postsusers.setValue(this.entries);
-                    userListenerCount.addListener();
+
                     Log.d("PostsUsersChangesSharedViewModel","user listener added for "+postUserId+"\t count: "+ userListenerCount.count);
                 }, e -> {
                     Log.e("PostsUsersChangesSharedViewModel","Error: "+e.getMessage());

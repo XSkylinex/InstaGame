@@ -34,6 +34,7 @@ public class PostsSharedViewModel extends ViewModel {
                     new AsyncTask<Post, Void, Void>() {
                         @Override
                         protected Void doInBackground(Post... posts) {
+                            Log.i("PostsSharedViewModel","add:"+post.toString());
                             AppLocalDb.db.postDao().insertAll(posts);
                             return null;
                         }
@@ -43,6 +44,8 @@ public class PostsSharedViewModel extends ViewModel {
                     new AsyncTask<Post, Void, Void>() {
                         @Override
                         protected Void doInBackground(Post... posts) {
+                            Log.i("PostsSharedViewModel","mod:"+post.toString());
+
                             AppLocalDb.db.postDao().insertAll(posts);
                             return null;
                         }
@@ -52,10 +55,13 @@ public class PostsSharedViewModel extends ViewModel {
                     new AsyncTask<Post, Void, Void>() {
                         @Override
                         protected Void doInBackground(Post... posts) {
-                            AppLocalDb.db.postDao().delete(posts[0]);
+                            Log.i("PostsSharedViewModel","rev:"+post.toString());
+                            for (Post post : posts) {
+                                AppLocalDb.db.postDao().delete(post);
+                            }
                             return null;
                         }
-                    }.doInBackground(post);
+                    }.execute(post);
                 },
                 () -> {},
                 e -> {

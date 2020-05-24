@@ -84,6 +84,7 @@ public class GridFragment extends Fragment {
             Collections.shuffle(postArrayList);
             this.pbGrid.setVisibility(View.GONE);
             Log.d("posts",postArrayList.toString());
+            imageAdapter.clear();
             imageAdapter.addAll(postArrayList);
         });
 

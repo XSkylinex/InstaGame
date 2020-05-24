@@ -1,5 +1,7 @@
 package com.example.test.fragment;
 
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,8 +29,11 @@ import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.models.Post;
 import com.example.test.models.listener.Listener;
+import com.example.test.models.room.AppLocalDb;
+import com.example.test.models.room.PostDao;
 import com.example.test.viewmodel.PostsSharedViewModel;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -145,6 +150,7 @@ public class PostFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //handle menu item clicks
@@ -152,9 +158,21 @@ public class PostFragment extends Fragment {
             case R.id.item_post_delete:{
                 item.setCheckable(false);
                 Database.Post.deletePost(postId, aVoid -> {
-                    Database.User.detachPostToUser(Auth.getUserId(), postId, aVoid1 -> {
-                        Database.Notification.deleteNotifications(Auth.getUserId(), postId, aVoid2 -> {}, e -> {});
-                    }, e -> { });
+                    Database.User.detachPostToUser(Auth.getUserId(), postId, aVoid1 ->
+                            Database.Notification.deleteNotifications(Auth.getUserId(), postId, aVoid2 -> {}, e -> {}),
+                            Throwable::printStackTrace);
+
+                    new AsyncTask<String, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(String ... postIds) {
+                            Log.i("PostsSharedViewModel","rev:"+ Arrays.toString(postIds));
+                            for (String postId : postIds) {
+                                AppLocalDb.db.postDao().delete(postId);
+                            }
+                            return null;
+                        }
+                    }.execute(postId);
+
                     Toast.makeText(getContext(), "Post Successfully deleted", Toast.LENGTH_SHORT).show();
                     Navigation.findNavController(requireView()).popBackStack();
                     item.setCheckable(true);
