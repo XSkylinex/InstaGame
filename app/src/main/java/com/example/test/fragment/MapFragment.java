@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.test.R;
+import com.example.test.adapter.CustomPostInfoWindowGoogleMap;
 import com.example.test.models.Coordinate;
 import com.example.test.models.Post;
 import com.example.test.viewmodel.PostsUsersChangesSharedViewModel;
@@ -75,10 +76,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
 
         PostsUsersChangesSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsUsersChangesSharedViewModel.class);
-
+        CustomPostInfoWindowGoogleMap customInfoWindow = new CustomPostInfoWindowGoogleMap(requireContext());
+        map.setInfoWindowAdapter(customInfoWindow);
         mViewModel.getPostsUsers().observe(this.getViewLifecycleOwner(),postUserMap -> {
             map.clear();
             Log.d("MapFragment","clear markers");
+
+
             postUserMap.forEach((post, user) -> {
                 final Coordinate coordinate = post.get_coordinate();
                 if (coordinate == null) return;
@@ -92,7 +96,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 (BitmapDescriptorFactory.HUE_RED))
                         .draggable(false);
                 final Marker marker = map.addMarker(markerOptions);
+
                 marker.setTag(post);
+
+//                marker.showInfoWindow();
 
             });
         });
