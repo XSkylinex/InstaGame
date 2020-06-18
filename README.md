@@ -1,5 +1,4 @@
 # InstaGame
-InstaGame
 
 Course Android
 
