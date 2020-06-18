@@ -18,6 +18,7 @@ your can share location.
 9) Can change user photo and change password
 10) GPS (because we are 3 students)
 11) Search users (did for fun)
+12) Like and Comments (delete and edit)
 
 
 Created by Alex,Mor and Liat
