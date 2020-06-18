@@ -9,7 +9,7 @@ your can share location.
 # This Project Include:
 1) ViewModel
 2) Live Data
-3) ROOM
+3) ROOM ( SQL )
 4) Navigation (graph nav) and use safeArgs
 5) Firebase (database)
 6) Picasso (for photos)
