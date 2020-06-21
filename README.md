@@ -19,6 +19,7 @@ your can share location.
 10) GPS (because we are 3 students)
 11) Search users (did for fun)
 12) Like and Comments (delete and edit)
+13) Recycler View for PhotoGrid (User Profile and Search Page)
 
 
 Created by Alex,Mor and Liat
