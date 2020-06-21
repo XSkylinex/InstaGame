@@ -29,7 +29,7 @@ import java.util.List;
 public class PostAPI {
 
     final static String LIKES = "likes";
-    final static String POSTS = "posts";
+    public final static String POSTS = "posts";
 
     PostAPI(){}
 

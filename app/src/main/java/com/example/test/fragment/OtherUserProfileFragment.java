@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -14,20 +13,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
 import com.example.test.adapter.PostImageAdapter;
 import com.example.test.contollers.database.Database;
+import com.example.test.contollers.database.PostAPI;
 import com.example.test.models.Post;
-import com.example.test.viewmodel.PostsSharedViewModel;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class OtherUserProfileFragment extends Fragment {
@@ -39,7 +37,7 @@ public class OtherUserProfileFragment extends Fragment {
     private TextView tv_userDescription;
     private TextView tv_posts_count;
     private ProgressBar _pbOtherUserProfile;
-
+    RecyclerView gridview;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,23 +50,15 @@ public class OtherUserProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         ((AppCompatActivity) requireActivity()).getSupportActionBar().hide();
 
-        GridView gridview = view.findViewById(R.id.usergridview);
+        this.gridview = view.findViewById(R.id.usergridview);
+        gridview.setLayoutManager(new GridLayoutManager(requireContext(), 3));
+
         this.iv_user_pic = view.findViewById(R.id.iv_user_pic);
         this.tv_UserFullName = view.findViewById(R.id.tv_UserFullName);
         this.tv_userDescription = view.findViewById(R.id.tv_userDescription);
         this.tv_posts_count = view.findViewById(R.id.tv_posts_count);
         this._pbOtherUserProfile = view.findViewById(R.id.pb_other_user_profile);
 
-        imageAdapter = new PostImageAdapter(getContext(),new ArrayList<>());
-        gridview.setOnItemClickListener((parent, view1, position, id) -> {
-            Post post = imageAdapter.getItem(position);
-            assert post != null;
-            final OtherUserProfileFragmentDirections.ActionOtherUserProfileFragmentToPostFragment action =
-                    OtherUserProfileFragmentDirections.actionOtherUserProfileFragmentToPostFragment(post.get_id());
-            Navigation.findNavController(requireView()).navigate(action);
-
-        });
-        gridview.setAdapter(imageAdapter);
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -76,19 +66,37 @@ public class OtherUserProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         final String userId = OtherUserProfileFragmentArgs.fromBundle(requireArguments()).getUserId();
-        PostsSharedViewModel mViewModel = new ViewModelProvider(requireActivity()).get(PostsSharedViewModel.class);
 
-        final LiveData<List<Post>> posts = mViewModel.getPosts();
 
-        posts.observe(this.getViewLifecycleOwner(),posts1 -> {
-            posts1 = posts1.stream().filter(post -> post.get_userId().equals(userId)).sorted((o1, o2) -> o2.get_date().compareTo(o1.get_date())).collect(Collectors.toList());
-            this._pbOtherUserProfile.setVisibility(View.GONE);
-            Log.d("posts",posts1.toString());
-            tv_posts_count.setText(posts1.size()+"");
-            imageAdapter.addAll(posts1);
+        Query query = FirebaseFirestore.getInstance()
+                .collection(PostAPI.POSTS)
+                .whereEqualTo("_userId", userId);
+
+        // Configure recycler adapter options:
+        //  * query is the Query object defined above.
+        //  * Chat.class instructs the adapter to convert each DocumentSnapshot to a Chat object
+        FirestoreRecyclerOptions<Post> options = new FirestoreRecyclerOptions.Builder<Post>()
+                .setQuery(query, Post.class)
+                .build();
+        imageAdapter = new PostImageAdapter(options);
+        imageAdapter.setOnItemClickListener(new PostImageAdapter.ClickListener() {
+            @Override
+            public void onItemClick(int position, View v) {
+                final Post post = imageAdapter.getItem(position);
+
+                final OtherUserProfileFragmentDirections.ActionOtherUserProfileFragmentToPostFragment action =
+                        OtherUserProfileFragmentDirections.actionOtherUserProfileFragmentToPostFragment(post.get_id());
+                Navigation.findNavController(requireView()).navigate(action);
+            }
+
+            @Override
+            public void onItemLongClick(int position, View v) {
+            }
         });
 
 
+        gridview.setAdapter(imageAdapter);
+        imageAdapter.startListening();
         Database.User.getUser(userId, user -> {
             if (user.get_imageUrl() != null)
                 Picasso.get().load(user.get_imageUrl()).into(iv_user_pic);

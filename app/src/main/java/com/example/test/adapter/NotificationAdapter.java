@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+
+//Notifications is commends and like what user did or get
+
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.MyViewHolder> {
     private List<Map.Entry<Notification, Post>> mDatasetP;
     private List<Map.Entry<Notification, User>> mDatasetU;
@@ -42,7 +45,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             this.iv_notification_post_image = view.findViewById(R.id.iv_notification_post_image);
         }
 
-        void setData(@NonNull final Notification notification, @Nullable final Post post, @Nullable final User user, final Consumer<User> travelToUserProfile, Consumer<Post> travelToPost){
+        void setData(@NonNull final Notification notification, @Nullable final Post post,
+                     @Nullable final User user, final Consumer<User> travelToUserProfile,
+                     Consumer<Post> travelToPost){
             String username="";
             if (user != null)
                 username = user.get_userName();
@@ -87,6 +92,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.call_notification,parent,false);
         return new MyViewHolder(v);
     }
+
 
     @Override
     public void onBindViewHolder(NotificationAdapter.MyViewHolder holder, int position) {

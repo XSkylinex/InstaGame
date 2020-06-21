@@ -1,72 +1,95 @@
 package com.example.test.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
 import com.example.test.models.Post;
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.squareup.picasso.Picasso;
 
-import org.jetbrains.annotations.NotNull;
+public class PostImageAdapter extends FirestoreRecyclerAdapter<Post, PostImageAdapter.PostHolder> {
 
-import java.util.ArrayList;
-
-public class PostImageAdapter extends ArrayAdapter<Post> {
+    private static ClickListener clickListener;
 
 
+    /**
+     * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
+     * FirestoreRecyclerOptions} for configuration options.
+     *
+     * @param options
+     */
+    public PostImageAdapter(@NonNull FirestoreRecyclerOptions<Post> options) {
+        super(options);
+    }
 
-    public PostImageAdapter(Context context, ArrayList<Post> posts) {
-        super(context, 0, posts);
+    class PostHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+        ImageView ivPostImage;
+        Post post;
+        public PostHolder(@NonNull View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+            ivPostImage = itemView.findViewById(R.id.iv_post_image);
+        }
+        void setData(@NonNull Post post){
+            this.post = post;
+            Picasso.get().load(post.get_imageUrl()).into(ivPostImage);
+        }
+
+        @Override
+        public void onClick(View v) {
+            clickListener.onItemClick(getAdapterPosition(), v);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            clickListener.onItemLongClick(getAdapterPosition(), v);
+            return false;
+        }
+
+        public Post getData() {
+            return post;
+        }
     }
 
     @Override
-    public View getView(int position, View convertView, @NotNull ViewGroup parent) {
-        // Get the data item for this position
-        Post post = getItem(position);
-        ViewHolder holder;
-        final View result;
-        // Check if an existing view is being reused, otherwise inflate the view
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.call_post_image, parent, false);
-            // Lookup view for data population
-            holder = new ViewHolder(convertView);
-            result=convertView;
-            // Cache the viewHolder object inside the fresh view
-            convertView.setTag(holder);
-        } else {
-            // View is being recycled, retrieve the viewHolder object from tag
-            holder = (ViewHolder) convertView.getTag();
-            result=convertView;
-        }
-
-//        Animation animation = AnimationUtils.loadAnimation(getContext(), (position > lastPosition) ? R.anim.up_from_bottom : R.anim.down_from_top);
-//        result.startAnimation(animation);
-//        lastPosition = position;
-
-        // Populate the data into the template view using the data object
-        assert post != null;
-        holder.setData(post);
-        // Return the completed view to render on screen
-        return convertView;
+    protected void onBindViewHolder(@NonNull PostHolder holder, int position, @NonNull Post model) {
+        // Bind the Chat object to the ChatHolder
+        // ...
+//        Log.d("MyFirestoreRecyclerAdapter","onBindViewHolder "+model);
+        holder.setData(model);
     }
 
-    // View lookup cache
-    private static class ViewHolder {
-        ImageView ivPostImage;
-
-        ViewHolder(View convertView) {
-            ivPostImage = convertView.findViewById(R.id.iv_post_image);
-        }
-
-        void setData(@NonNull Post post){
-            Picasso.get().load(post.get_imageUrl()).into(ivPostImage);
-        }
+    @Override
+    public void onViewRecycled(@NonNull PostHolder holder) {
+        super.onViewRecycled(holder);
+//        Log.d("MyFirestoreRecyclerAdapter","onViewRecycled "+holder.getData());
     }
 
+
+    @NonNull
+    @Override
+    public PostHolder onCreateViewHolder(@NonNull ViewGroup group, int i) {
+        // Create a new instance of the ViewHolder, in this case we are using a custom
+        // layout called R.layout.message for each item
+        View view = LayoutInflater.from(group.getContext())
+                .inflate(R.layout.call_post_image, group, false);
+
+        return new PostHolder(view);
+    }
+
+    public void setOnItemClickListener(ClickListener clickListener) {
+        PostImageAdapter.clickListener = clickListener;
+    }
+
+    public interface ClickListener {
+        void onItemClick(int position, View v);
+        void onItemLongClick(int position, View v);
+    }
 }

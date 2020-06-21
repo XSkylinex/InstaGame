@@ -74,24 +74,20 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_Posts" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <GridView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/usergridview"
 
 
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:horizontalSpacing="8dp"
 
-        android:numColumns="3"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
-    </GridView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <ProgressBar
         android:id="@+id/pb_other_user_profile"
@@ -100,7 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="141dp"
         android:layout_marginBottom="133dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/usergridview"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

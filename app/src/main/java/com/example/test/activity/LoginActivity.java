@@ -14,7 +14,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        Auth.signOut();
+        Auth.signOut();
         if (Auth.isSignIn()){
 
             Intent intent = new Intent(this, MainActivity.class);

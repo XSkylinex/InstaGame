@@ -48,7 +48,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
             this.iv_user_image = view.findViewById(R.id.iv_user_image);
         }
 
-        void setData(final Comment comment, final User user, final Consumer<User> travelToUserProfile){
+        void setData(final Comment comment, final User user, final Consumer<User> travelToUserProfile){ // get data and edit the view model
             this.tv_comment_username.setText(user.get_userName());
             final Date date = comment.get_date();
             final String dateTxt = date.getHours()+":"+date.getMinutes()+"\t  "+date.getDate()+"/"+(date.getMonth()+1)+"/"+(date.getYear() + 1900);
@@ -96,6 +96,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
     public void onBindViewHolder(CommentAdapter.MyViewHolder holder, int position) {
         holder.setData(mDataset.get(position).getKey(),mDataset.get(position).getValue(),this.travelToUserProfile);
     }
+
 
     @Override
     public int getItemCount() {
