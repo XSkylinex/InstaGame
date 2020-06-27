@@ -19,9 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.test.R;
 import com.example.test.adapter.PostImageAdapter;
+import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.contollers.database.PostAPI;
 import com.example.test.models.Post;
+import com.example.test.models.listener.Listener;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -31,6 +33,8 @@ import com.squareup.picasso.Picasso;
 public class OtherUserProfileFragment extends Fragment {
 
     private PostImageAdapter imageAdapter;
+    private Listener listener;
+
 
     private ImageView iv_user_pic;
     private TextView tv_UserFullName;
@@ -94,7 +98,7 @@ public class OtherUserProfileFragment extends Fragment {
             }
         });
 
-
+        listener = Database.Post.listenPostsFromUser(userId, posts -> tv_posts_count.setText(""+posts.size()), Throwable::printStackTrace);
         gridview.setAdapter(imageAdapter);
         imageAdapter.startListening();
         Database.User.getUser(userId, user -> {

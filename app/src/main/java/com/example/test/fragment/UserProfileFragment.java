@@ -31,6 +31,7 @@ import com.example.test.contollers.Auth;
 import com.example.test.contollers.database.Database;
 import com.example.test.contollers.database.PostAPI;
 import com.example.test.models.Post;
+import com.example.test.models.listener.Listener;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -39,6 +40,7 @@ import com.squareup.picasso.Picasso;
 public class UserProfileFragment extends Fragment {
 
     private PostImageAdapter imageAdapter;
+    private Listener listener;
 
     private ImageView iv_user_pic;
     private TextView tv_UserFullName;
@@ -119,6 +121,7 @@ public class UserProfileFragment extends Fragment {
         imageAdapter.startListening();
         tv_posts_count.setText("0");
 
+        listener = Database.Post.listenPostsFromUser(Auth.getUserId(), posts -> tv_posts_count.setText(""+posts.size()), Throwable::printStackTrace);
         Database.User.getCurrentUser(user -> {
             if (user.get_imageUrl() != null)
                 Picasso.get().load(user.get_imageUrl()).into(iv_user_pic);
@@ -136,6 +139,7 @@ public class UserProfileFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         imageAdapter.stopListening();
+        listener.remove();
     }
 
     @Override
